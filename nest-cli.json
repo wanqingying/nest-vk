@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/nestjs-ai-kit/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/nestjs-ai-kit/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/nestjs-ai-kit",
+  "projects": {
+    "nestjs-ai-kit": {
+      "type": "application",
+      "root": "apps/nestjs-ai-kit",
+      "entryFile": "main",
+      "sourceRoot": "apps/nestjs-ai-kit/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nestjs-ai-kit/tsconfig.app.json"
+      }
+    },
+    "nest-ai-api": {
+      "type": "application",
+      "root": "apps/nest-ai-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/nest-ai-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nest-ai-api/tsconfig.app.json"
+      }
+    }
+  }
+}
