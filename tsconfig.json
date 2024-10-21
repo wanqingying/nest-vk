@@ -3,10 +3,11 @@
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
+    "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    "target": "ES2024",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
@@ -17,6 +18,27 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "paths": {
+      "@nest-rpc-server/*": [
+        "apps/nest-rpc-server/src/*"
+      ],
+      "@nest-rpc-client/*": [
+        "apps/nest-rpc-client/src/*"
+      ],
+      "@app/microrpc": [
+        "libs/microrpc/src"
+      ],
+      "@app/microrpc/*": [
+        "libs/microrpc/src/*"
+      ],
+      "@app/utils": [
+        "libs/utils/src"
+      ],
+      "@app/utils/*": [
+        "libs/utils/src/*"
+      ]
+    },
+    "inlineSources": true,
+    "sourceRoot": "/"
   }
 }

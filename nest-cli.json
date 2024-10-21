@@ -1,31 +1,49 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/nestjs-ai-kit/src",
+  "sourceRoot": "apps/nest-rpc-client/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/nestjs-ai-kit/tsconfig.app.json"
+    "tsConfigPath": "apps/nest-rpc-client/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/nestjs-ai-kit",
+  "root": "apps/nest-rpc-client",
   "projects": {
-    "nestjs-ai-kit": {
+    "nest-rpc-client": {
       "type": "application",
-      "root": "apps/nestjs-ai-kit",
+      "root": "apps/nest-rpc-client",
       "entryFile": "main",
-      "sourceRoot": "apps/nestjs-ai-kit/src",
+      "sourceRoot": "apps/nest-rpc-client/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/nestjs-ai-kit/tsconfig.app.json"
+        "tsConfigPath": "apps/nest-rpc-client/tsconfig.app.json"
       }
     },
-    "nest-ai-api": {
+    "nest-rpc-server": {
       "type": "application",
-      "root": "apps/nest-ai-api",
+      "root": "apps/nest-rpc-server",
       "entryFile": "main",
-      "sourceRoot": "apps/nest-ai-api/src",
+      "sourceRoot": "apps/nest-rpc-server/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/nest-ai-api/tsconfig.app.json"
+        "tsConfigPath": "apps/nest-rpc-server/tsconfig.app.json"
+      }
+    },
+    "microrpc": {
+      "type": "library",
+      "root": "libs/microrpc",
+      "entryFile": "index",
+      "sourceRoot": "libs/microrpc/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/microrpc/tsconfig.lib.json"
+      }
+    },
+    "utils": {
+      "type": "library",
+      "root": "libs/utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/utils/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/utils/tsconfig.lib.json"
       }
     }
   }
