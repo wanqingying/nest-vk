@@ -22,7 +22,7 @@ export class ChatService implements OnModuleInit {
       apiKey: 'sk-Jg800f045160f131efd4e26ddbcb0b7cd5d90b0028aT6CVy', // This is the default and can be omitted
       baseURL: 'https://api.gptsapi.net/v1',
       fetch: (u, init) => {
-        console.log('fetching', u, init);
+        // console.log('fetching', u, init);
         return fetch(u, init);
       },
     });
