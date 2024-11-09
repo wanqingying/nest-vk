@@ -17,6 +17,9 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "paths": {
+      "@nestjs-ai-kit/*": ["apps/nestjs-ai-kit/src/*"],
+      "nestjs-ai-kit/*": ["apps/nestjs-ai-kit/src/*"],
+    }
   }
 }
