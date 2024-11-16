@@ -2,10 +2,6 @@ import { Controller, Query, Sse, Res } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 import { Response } from 'express';
 import { ChatService } from './chat.service';
-import { PassThrough, pipeline, Transform } from 'stream';
-import { promisify } from 'util';
-
-const pipelineAsync = promisify(pipeline);
 
 const b = {
   id: 'chatcmpl-AKpcfk4IWxUQxumg5fpRBl5BremNd',
@@ -43,34 +39,49 @@ type ChatCompletion = typeof b | typeof b2;
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(private readonly chatService: ChatService) {
+    console.log('init 5');
+  }
 
   async getHello(@Query() q: any) {
     return this.chatService.aiChatHelloV2(q?.txt || 'hello');
   }
 
   @Sse('/sse-chat')
-  getHelloV2(@Query() q: any): Observable<MessageEvent> {
+  getHelloV2(@Query() q: any, @Res() res: Response): Observable<MessageEvent> {
+    console.log('sse-chat', q);
     return new Observable((subscriber) => {
+      const start_ms = Date.now();
+      let first_chunk_ms = 0;
+      let last_chunk_ms = 0;
       this.chatService
         .aiChatHelloV3(
-          q?.txt ||
-            'how to learn nodejs? please give a tutorial in 100 words and 5 steps.',
+          q?.content ||
+            '写一个markdown ,内容是关于后端程序员职业发展的，多于200个字符串',
         )
         .then(async (stream) => {
           for await (const chunk of stream) {
             const txt = chunk.choices[0]?.delta?.content || '';
-            console.log('next', chunk.choices[0]?.delta?.content || '');
-            console.log('data', chunk);
+            // console.log('next', chunk.choices[0]?.delta?.content || '');
+            // console.log('data', chunk);
             subscriber.next(txt);
+            if (txt && first_chunk_ms === 0) {
+              first_chunk_ms = Date.now() - start_ms;
+            }
           }
+          last_chunk_ms = Date.now() - start_ms;
+          console.log(
+            `first_chunk_ms: ${first_chunk_ms} last_chunk_ms: ${last_chunk_ms}`,
+          );
           // subscriber.unsubscribe();
           subscriber.next('SSE_END_OF_STREAM');
           subscriber.complete();
+          res.end();
         })
         .catch((error) => {
           // console.log('errror xxx');
           subscriber.error(error);
+          res.end();
         });
     }).pipe(
       map(
@@ -81,71 +92,5 @@ export class ChatController {
           }) as MessageEvent,
       ),
     );
-  }
-
-  @Sse('/sse-chat-v2')
-  getHelloV3(@Query() q: any, @Res() res: Response): Observable<void> {
-    return new Observable((subscriber) => {
-      const passThrough = new PassThrough();
-
-      // 设置响应头
-      // res.setHeader('Content-Type', 'text/event-stream');
-      // res.setHeader('Cache-Control', 'no-cache');
-      // res.setHeader('Connection', 'keep-alive');
-      // res.setHeader('Access-Control-Allow-Origin', '*');
-      // res.flushHeaders(); // 立即发送响应头
-
-      // 将 PassThrough 流管道到响应
-      passThrough.pipe(res);
-
-      this.chatService
-        .aiChatHelloV3(
-          q?.txt ||
-            'how to learn nodejs? please give a tutorial in 100 words and 5 steps.',
-        )
-        .then(async (stream) => {
-          try {
-            await pipelineAsync(
-              stream,
-              new Transform({
-                objectMode: true,
-                transform(chunk, encoding, callback) {
-                  const txt = chunk.choices[0]?.delta?.content || '';
-                  if (txt) {
-                    this.push(`data: ${txt}\n\n`);
-                  } else {
-                  }
-                  callback();
-                },
-              }),
-              passThrough,
-            ).then(() => {
-              console.log('end of stream');
-              passThrough.write('data: SSE_END_OF_STREAM\n\n');
-              passThrough.end();
-              subscriber.complete();
-            });
-            console.log('end of stream');
-            // 发送 END_OF_STREAM 消息
-            passThrough.write('data: SSE_END_OF_STREAM\n\n');
-            passThrough.end();
-            subscriber.complete();
-          } catch (error) {
-            passThrough.write(`data: ERROR\n\n`);
-            passThrough.end();
-            subscriber.error(error);
-          }
-        })
-        .catch((error) => {
-          passThrough.write(`data: ERROR\n\n`);
-          passThrough.end();
-          subscriber.error(error);
-        });
-
-      // 当订阅者取消订阅时，关闭 PassThrough 流
-      return () => {
-        passThrough.end();
-      };
-    });
   }
 }
