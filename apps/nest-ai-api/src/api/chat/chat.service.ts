@@ -19,10 +19,8 @@ export class ChatService implements OnModuleInit {
   private client: OpenAI;
   async onModuleInit() {
     console.log('init 3');
-    this.client = new OpenAI({
-      apiKey: 'sk-Jg800f045160f131efd4e26ddbcb0b7cd5d90b0028aT6CVy', // This is the default and can be omitted
-      baseURL: 'https://api.gptsapi.net/v1',
-    });
+    console.log('process.env.OPENAI_API_KEY', process.env.OPENAI_API_KEY);
+    this.client = new OpenAI({});
     // this.client = new OpenAI({
     //   apiKey: 'sk-m484x9INeA9cHZ3q8a70Bd60F2D04807Bb06C0A8B0D524Ad', // This is the default and can be omitted
     //   baseURL: 'https://api.gpt.ge/v1',

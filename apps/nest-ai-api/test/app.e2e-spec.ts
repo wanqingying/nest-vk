@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { NestAiApiModule } from './../src/nest-ai-api.module';
+import { NestAiApiModule } from '../src/app.module';
 
 describe('NestAiApiController (e2e)', () => {
   let app: INestApplication;

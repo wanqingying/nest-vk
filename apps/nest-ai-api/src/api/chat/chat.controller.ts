@@ -1,7 +1,8 @@
-import { Controller, Query, Sse, Res } from '@nestjs/common';
+import { Controller, Query, Sse, Res, Get } from '@nestjs/common';
 import { Observable, map } from 'rxjs';
 import { Response } from 'express';
 import { ChatService } from './chat.service';
+import { LangchainService } from '../../modules/langchain.service';
 
 const b = {
   id: 'chatcmpl-AKpcfk4IWxUQxumg5fpRBl5BremNd',
@@ -39,12 +40,25 @@ type ChatCompletion = typeof b | typeof b2;
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly langchain: LangchainService,
+  ) {
     console.log('init 5');
+  }
+
+  @Get('/sentry')
+  getNErrorV2(@Query() q: any) {
+    throw new Error('sentry test error v2');
   }
 
   async getHello(@Query() q: any) {
     return this.chatService.aiChatHelloV2(q?.txt || 'hello');
+  }
+
+  @Get('hello')
+  async getHello2(@Query() q: any) {
+    return this.langchain.aiChatHello(q?.txt || 'hello');
   }
 
   @Sse('/sse-chat')

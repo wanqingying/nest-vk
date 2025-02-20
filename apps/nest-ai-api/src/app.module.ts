@@ -1,25 +1,29 @@
-import { LangchainModule } from './../../nest-ai-api/src/modules/langchain.module';
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-// import { AppService } from './app.service';
-import { AppService } from '@nestjs-ai-kit/app.service';
+import { ChatModule } from './api/chat/chat.module';
+
 import { SentryModule } from '@sentry/nestjs/setup';
 import { APP_FILTER } from '@nestjs/core';
 import { SentryGlobalFilter } from '@sentry/nestjs/setup';
 
+// config
+import { ConfigModule } from '@nestjs/config';
+import { LangchainModule } from './modules/langchain.module';
+
 @Module({
   imports: [
-    LangchainModule,
-    // sentry
     SentryModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    ChatModule,
+    LangchainModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     {
       provide: APP_FILTER,
       useClass: SentryGlobalFilter,
     },
   ],
 })
-export class AppModule {}
+export class NestAiApiModule {}

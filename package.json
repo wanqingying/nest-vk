@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && npm run sentry:sourcemaps",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch nest-ai-api",
@@ -18,15 +18,27 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/nestjs-ai-kit/test/jest-e2e.json"
+    "test:e2e": "jest --config ./apps/nestjs-ai-kit/test/jest-e2e.json",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org qingying --project node-nestjs ./dist/apps/nest-ai-api && sentry-cli sourcemaps upload --org qingying --project node-nestjs ./dist"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.31",
+    "@langchain/langgraph": "^0.2.41",
+    "@langchain/openai": "^0.3.17",
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@sentry/cli": "^2.42.1",
+    "@sentry/nestjs": "^9.1.0",
+    "@sentry/profiling-node": "^9.1.0",
+    "dotenv": "^16.4.7",
+    "escape-string-regexp": "^5.0.0",
+    "gpt-tokenizer": "^2.8.1",
     "openai": "^4.68.1",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -70,5 +82,6 @@
     "roots": [
       "<rootDir>/apps/"
     ]
-  }
+  },
+  "packageManager": "yarn@3.4.1+sha512.a333bf9c2557d71f5ba87dd1446cde24bb9c35301ec29dd2baba577b3f9d1ab61348b66a1324de9088c40a996c5b9203794da8bf14cab9fae6a6eccc00cb8078"
 }
