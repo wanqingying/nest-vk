@@ -27,6 +27,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/nest-ai-api/tsconfig.app.json"
       }
+    },
+    "microrpc": {
+      "type": "library",
+      "root": "libs/microrpc",
+      "entryFile": "index",
+      "sourceRoot": "libs/microrpc/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/microrpc/tsconfig.lib.json"
+      }
+    },
+    "utils": {
+      "type": "library",
+      "root": "libs/utils",
+      "entryFile": "index",
+      "sourceRoot": "libs/utils/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/utils/tsconfig.lib.json"
+      }
     }
   }
 }

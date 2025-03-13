@@ -1,0 +1,56 @@
+# version: "3.8"
+
+services:
+  # ...existing services...
+
+  consul:
+    image: hashicorp/consul:latest
+    container_name: consul
+    ports:
+      - '8500:8500'
+      - '8600:8600/udp'
+    volumes:
+      - ./volumes/data/consul:/consul/data
+    command:
+      ['agent', '-server', '-bootstrap-expect=1', '-ui', '-client=0.0.0.0']
+    networks:
+      - app-network
+
+  nest-rpc:
+    image: node:23-slim
+    working_dir: /usr/src/nestapp
+    volumes:
+      - .:/usr/src/nestapp
+    environment:
+      NODE_ENV: prod
+      PROTO_DIR: libs/microrpc/src/protos
+      CONTAINER_NAME: ${HOSTNAME}
+    command: ['sh', '-c', 'IP=$(hostname -i) && echo "Container IP: $IP" && node ./dist/apps/nest-ai-api/main.js']
+    deploy:
+      replicas: 2
+    depends_on:
+      - consul
+    networks:
+      - app-network
+
+  nest-api:
+    image: node:23-slim
+    container_name: nest-client
+    working_dir: /usr/src/nestapp
+    volumes:
+      - .:/usr/src/nestapp
+    environment:
+      NODE_ENV: prod
+      PROTO_DIR: libs/microrpc/src/protos
+    command: ['node', './dist/apps/nestjs-ai-kit/main.js']
+    ports:
+      - '3007:3000'
+    depends_on:
+      - nest-rpc
+      - consul
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

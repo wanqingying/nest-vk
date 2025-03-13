@@ -1,0 +1,141 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7.4.2
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volumes/data/redis:/data/redis
+      - ./volumes/config/redis:/usr/local/etc/redis
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:8.0.5
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    volumes:
+      - ./volumes/data/mongo:/data/mongo/db
+      - ./volumes/config/mongo:/etc/mongo
+    command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express:1.0.2
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: user
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_URL: mongodb://user:pass@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+    networks:
+      - app-network
+
+  # postgres:
+  #   image: postgres:15
+  #   container_name: postgres
+  #   ports:
+  #     - "5432:5432"
+  #   environment:
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: pass
+  #     POSTGRES_DB: mydatabase
+  #     POSTGRES_HBA_FILE: /etc/pg/config/pg_hba.conf
+  #     POSTGRES_CONFIG_FILE: /etc/pg/config/pg.conf
+  #   volumes:
+  #     - ./volumes/data/postgres:/var/lib/postgresql/data
+  #     - ./volumes/config/postgres:/etc/pg/config
+  #   networks:
+  #     - app-network
+
+  # rabbitmq:
+  #   image: rabbitmq:4.0.7
+  #   container_name: rabbitmq
+  #   ports:
+  #     - "5672:5672"
+  #     - "15673:15673"
+  #   volumes:
+  #     # - rabbitmq_data:/var/lib/rabbitmq
+  #     - ./volumes/data/rabbitmq:/var/lib/rabbitmq
+  #     - ./volumes/config/rabbitmq:/etc/rabbitmq
+  #   environment:
+  #     RABBITMQ_CONFIG_FILE: /etc/rabbitmq/rabbitmq.conf
+  #     # RABBITMQ_MNESIA_BASE: /var/lib/rabbitmq/mnesia
+  #     # RABBITMQ_MNESIA_DIR: /var/lib/rabbitmq/mnesia
+  #   networks:
+  #     - app-network
+
+  # elasticsearch:
+  #   image: elastic/elasticsearch:8.17.3
+  #   container_name: elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - ELASTIC_PASSWORD=pass
+  #     - ES_JAVA_OPTS=-Xms512m -Xmx512m
+  #   ports:
+  #     - "9200:9200"
+  #     - "9300:9300"
+  #   volumes:
+  #     - ./volumes/data/es:/var/lib/elasticsearch
+  #     - ./volumes/config/es:/usr/share/elasticsearch/config
+  #   # command: ["elasticsearch"]
+  #   networks:
+  #     - app-network
+
+  # kibana:
+  #   image: kibana:8.17.3
+  #   container_name: kibana
+  #   ports:
+  #     - "5601:5601"
+  #   environment:
+  #     ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+  #     KBN_PATH_CONF: /usr/share/kibana/config
+  #   volumes:
+  #     - ./volumes/config/kibana:/usr/share/kibana/config
+  #   networks:
+  #     - app-network
+  #   # depends_on:
+  #   #   - elasticsearch
+
+  # grafana:
+  #   image: grafana/grafana:11.5.2
+  #   container_name: grafana
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   volumes:
+  #     - ./volumes/data/grafana:/var/lib/grafana
+  #   networks:
+  #     - app-network
+
+  consul:
+    image: hashicorp/consul:latest
+    container_name: consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    volumes:
+      - ./volumes/data/consul:/consul/data
+    command: ["agent", "-server", "-bootstrap-expect=1", "-ui", "-client=0.0.0.0"]
+    networks:
+      - app-network
+
+
+
+networks:
+  app-network:
+    driver: bridge

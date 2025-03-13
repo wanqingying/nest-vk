@@ -8,6 +8,10 @@ import { SentryGlobalFilter } from '@sentry/nestjs/setup';
 // config
 import { ConfigModule } from '@nestjs/config';
 import { LangchainModule } from './modules/langchain.module';
+import { HealthModule } from './api/health/health.module';
+import { HeroModule } from './grpc/hero/hero.module';
+// import { UserModule } from './user/user.module';
+// import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -16,7 +20,11 @@ import { LangchainModule } from './modules/langchain.module';
       isGlobal: true,
     }),
     ChatModule,
+    HealthModule,
     LangchainModule,
+    HeroModule,
+    // UserModule,
+    // PostModule,
   ],
   controllers: [],
   providers: [
