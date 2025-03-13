@@ -3,10 +3,10 @@ import path from 'path';
 // process.env.GRPC_VERBOSITY='DEBUclG';
 var PROTO_PATH = path.join(
   process.cwd(),
-  '../libs/microrpc/src/protos/hero.proto',
+  '/libs/microrpc/src/protos/hero.proto',
 );
 
-import grpc from '@grpc/grpc-js';
+import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import { IpV4Resolver } from './ipv4_resolver';
 IpV4Resolver.setup();
@@ -42,29 +42,53 @@ async function testClient(target) {
       setTimeout(resolve, ms);
     });
   }
+  let contSuc = 0;
+  let contErr = 0;
+  let contTotal = 0;
+  let idMap = {};
 
   async function findOne() {
     return new Promise((resolve) => {
       client.findOne({ id: 1 }, function (err, response) {
         if (err) {
           console.error('Error:', err);
+          contErr++;
         } else {
-          console.log('response', ':', response);
+          if (response.id) {
+            let nc = idMap[response.id] || 0;
+            idMap[response.id] = nc + 1;
+            contSuc++;
+          }
         }
         resolve(1);
       });
-    });
+    })
+      .catch(() => {
+        contErr++;
+      })
+      .finally(() => {
+        contTotal++;
+      });
   }
 
   return new Promise(async (resolve) => {
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 300; i++) {
       await findOne();
-      await wait(1000);
+      await wait(100);
     }
     resolve(1);
+  }).finally(() => {
+    console.log(
+      'contSuc:',
+      contSuc,
+      'contErr:',
+      contErr,
+      'contTotal:',
+      contTotal,
+    );
+    console.log('idMap:', idMap);
   });
 }
-
 
 async function main() {
   const target2 = 'ipv4:127.0.0.1:3010';

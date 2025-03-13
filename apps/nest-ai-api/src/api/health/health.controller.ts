@@ -10,6 +10,7 @@ import {
 import { HealthService } from './health.service';
 import { CreateHealthDto } from './dto/create-health.dto';
 import { UpdateHealthDto } from './dto/update-health.dto';
+import { getNodeEnv } from '@app/utils';
 
 @Controller('health')
 export class HealthController {
@@ -22,8 +23,9 @@ export class HealthController {
 
   @Get()
   check() {
-    console.log('health check ok ', process.env.HOSTNAME);
-    return 'ok-' + process.env.HOSTNAME;
+    const ok = 'ok-' + getNodeEnv('CONSUL_ID');
+    console.log('health ', ok);
+    return ok;
   }
 
   @Get(':id')

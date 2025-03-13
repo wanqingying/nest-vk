@@ -5,6 +5,7 @@ import { CreateHeroDto } from './dto/create-hero.dto';
 import { UpdateHeroDto } from './dto/update-hero.dto';
 import { hero } from '@app/microrpc/protos/hero.js';
 import { Metadata, ServerUnaryCall } from '@grpc/grpc-js';
+import { getNodeEnv } from '@app/utils';
 
 @Controller()
 export class HeroController {
@@ -24,7 +25,7 @@ export class HeroController {
       id: 0,
       name: 'Not Found',
     };
-    one.name += ' - ' + process.env.HOSTNAME;
+    one.name += ' - ' + getNodeEnv('CONSUL_ID');
     one.id = Number(process.env.PORT);
     return hero.Hero.create(one);
   }

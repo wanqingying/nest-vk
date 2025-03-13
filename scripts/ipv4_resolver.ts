@@ -1,34 +1,23 @@
 import { isIPv4, isIPv6 } from 'node:net';
-
 import { StatusObject } from '@grpc/grpc-js/src/call-interface';
 import { ChannelOptions } from '@grpc/grpc-js/src/channel-options';
-import {
-  registerResolver,
-  Resolver,
-  ResolverListener,
-} from '@grpc/grpc-js/src/resolver';
+import { Resolver, ResolverListener } from '@grpc/grpc-js/src/resolver';
 import { TcpSubchannelAddress } from '@grpc/grpc-js/src/subchannel-address';
 import { Metadata, experimental } from '@grpc/grpc-js';
 import Consul from 'consul';
+import { debounce } from 'lodash';
+import fs from 'fs';
 
-const TRACER_NAME = 'ip_resolver';
+import path from 'node:path';
 
 const IPV4_SCHEME = 'ipv4';
-
 export interface GrpcUri {
   scheme?: string;
   authority?: string;
   path: string;
 }
 
-/*
- * The groups correspond to URI parts as follows:
- * 1. scheme
- * 2. authority
- * 3. path
- */
 const URI_REGEX = /^(?:([A-Za-z0-9+.-]+):)?(?:\/\/([^/]*)\/)?(.+)$/;
-
 export function parseUri(uriString: string): GrpcUri | null {
   const parsedUri = URI_REGEX.exec(uriString);
   if (parsedUri === null) {
@@ -40,14 +29,12 @@ export function parseUri(uriString: string): GrpcUri | null {
     path: parsedUri[3],
   };
 }
-
 export interface HostPort {
   host: string;
   port?: number;
 }
 
 const NUMBER_REGEX = /^\d+$/;
-
 export function splitHostPort(path: string): HostPort | null {
   if (path.startsWith('[')) {
     const hostEnd = path.indexOf(']');
@@ -119,50 +106,41 @@ export function uriToString(uri: GrpcUri): string {
 const DEFAULT_PORT = 443;
 
 export interface ConsulDisc {
-  // id: entry.Service.ID,
-  // service: entry.Service.Service,
-  // host: entry.Service.Address,
-  // port: entry.Service.Port,
   id: string;
   service: string;
   host: string;
   port: number;
+  checks?: any;
 }
 
 export class IpV4Resolver implements Resolver {
   private addresses: TcpSubchannelAddress[] = [];
-  private consulDict: Map<string, ConsulDisc> = new Map();
   private error: StatusObject | null = null;
+  private consulClient: Consul;
   constructor(
     target: GrpcUri,
     private listener: ResolverListener,
     channelOptions: ChannelOptions,
   ) {
+    this.updateResolution = debounce(this.updateResolution, 500);
     // trace('Resolver constructed for target ' + uriToString(target));
     console.log('Resolver constructed for target ' + uriToString(target));
     const addresses: TcpSubchannelAddress[] = [];
     if (!(target.scheme === IPV4_SCHEME)) {
       console.error('Unrecognized scheme ' + target.scheme + ' in IP resolver');
-
       return;
     }
     const pathList = target.path.split(',');
     for (const path of pathList) {
       const hostPort = splitHostPort(path);
       if (hostPort === null) {
-        this.error = {
-          code: Status.UNAVAILABLE,
-          details: `Failed to parse ${target.scheme} address ${path}`,
-          metadata: new Metadata(),
-        };
+        console.error('Failed to parse ' + target.scheme + ' address ' + path);
         return;
       }
       if (target.scheme === IPV4_SCHEME && !isIPv4(hostPort.host)) {
-        this.error = {
-          code: Status.UNAVAILABLE,
-          details: `Failed to parse ${target.scheme} address ${path}`,
-          metadata: new Metadata(),
-        };
+        console.error(
+          'Failed to parse ' + target.scheme + ' address ' + hostPort.host,
+        );
         return;
       }
       addresses.push({
@@ -176,15 +154,49 @@ export class IpV4Resolver implements Resolver {
     //   this.addresses.shift();
     //   this.updateResolution();
     // }, 2000);
-    this.initConsul();
+    this.initConsulWatch();
+    this.initConsulService();
   }
 
-  async initConsul() {
+  async initConsulService() {
+    const mb = {
+      ID: 'redis',
+      Service: 'redis',
+      Namespace: 'default',
+      Port: 8000,
+      Address: '',
+    };
+    const client = this.consulClient;
+    const [checks, services] = await Promise.all([
+      //xx
+      client.agent.checks(),
+      client.agent.services(),
+    ]);
+    const checkList = Array.from(Object.values(checks));
+    const serviceList = Array.from(Object.values(services)) as (typeof mb)[];
+    const newAddList: ConsulDisc[] = serviceList
+      .filter((s) => {
+        const status = checkList.find((c) => c.ServiceID === s.ID)?.Status;
+        return status.toLowerCase() === 'passing';
+      })
+      .map((s) => {
+        return {
+          id: s.ID,
+          service: s.Service,
+          host: s.Address,
+          port: s.Port,
+        };
+      });
+    this.handleServiceChange(newAddList);
+  }
+
+  async initConsulWatch() {
     const consulClient = new Consul({
       host: 'localhost',
       // host: process.env.NODE_ENV === 'dev' ? 'localhost' : 'consul',
       port: 8500,
     });
+    this.consulClient = consulClient;
     const watcher = consulClient.watch({
       method: consulClient.health.service,
       options: {
@@ -194,109 +206,25 @@ export class IpV4Resolver implements Resolver {
     });
 
     watcher.on('change', async (data) => {
-      const example = {
-        Node: {
-          ID: '4a05d998-cebc-eb6f-567c-b7eda4a9ca20',
-          Node: 'aa38e96e5d10',
-          Address: '172.20.0.2',
-          Datacenter: 'dc1',
-          TaggedAddresses: {
-            lan: '172.20.0.2',
-            lan_ipv4: '172.20.0.2',
-            wan: '172.20.0.2',
-            wan_ipv4: '172.20.0.2',
-          },
-          Meta: {
-            'consul-network-segment': '',
-            'consul-version': '1.20.5',
-          },
-          CreateIndex: 13,
-          ModifyIndex: 15,
-        },
-        Service: {
-          ID: 'nest-ai-api-grpc-s8fvk',
-          Service: 'nest-ai-api-grpc',
-          Tags: [],
-          Address: '127.0.0.1',
-          TaggedAddresses: {
-            lan_ipv4: {
-              Address: '127.0.0.1',
-              Port: 3010,
-            },
-            wan_ipv4: {
-              Address: '127.0.0.1',
-              Port: 3010,
-            },
-          },
-          Meta: null,
-          Port: 3010,
-          Weights: {
-            Passing: 1,
-            Warning: 1,
-          },
-          EnableTagOverride: false,
-          Proxy: {
-            Mode: '',
-            MeshGateway: {},
-            Expose: {},
-          },
-          Connect: {},
-          PeerName: '',
-          CreateIndex: 33,
-          ModifyIndex: 33,
-        },
-        Checks: [
-          {
-            Node: 'aa38e96e5d10',
-            CheckID: 'serfHealth',
-            Name: 'Serf Health Status',
-            Status: 'passing',
-            Notes: '',
-            Output: 'Agent alive and reachable',
-            ServiceID: '',
-            ServiceName: '',
-            ServiceTags: [],
-            Type: '',
-            Interval: '',
-            Timeout: '',
-            ExposedPort: 0,
-            Definition: {},
-            CreateIndex: 13,
-            ModifyIndex: 13,
-          },
-          {
-            Node: 'aa38e96e5d10',
-            CheckID: 'service:nest-ai-api-grpc-s8fvk',
-            Name: 'http-check-nest-ai-api-grpc-host.docker.internal',
-            Status: 'critical',
-            Notes: '',
-            Output:
-              'Get "http://host.docker.internal:3008/health": dial tcp 192.168.65.254:3008: connect: connection refused',
-            ServiceID: 'nest-ai-api-grpc-s8fvk',
-            ServiceName: 'nest-ai-api-grpc',
-            ServiceTags: [],
-            Type: 'http',
-            Interval: '15s',
-            Timeout: '3s',
-            ExposedPort: 0,
-            Definition: {},
-            CreateIndex: 33,
-            ModifyIndex: 139,
-          },
-        ],
-      };
-
-      const nodes: any[] = [];
+      // const fn=
+      fs.writeFileSync(
+        path.join(__dirname, `./logs/${Date.now().toString(36)}.json`),
+        JSON.stringify(data),
+        { flag: 'w+' },
+      );
+      const nodes = new Map<string, ConsulDisc>();
       const newAddList: ConsulDisc[] = [];
-      data.forEach((entry: typeof example) => {
+      if (!Array.isArray(data)) return;
+
+      data.forEach((entry: any) => {
         const checks = entry.Checks.map((c) => c.Status);
         const isPass = checks.every((c) => c === 'passing');
-        nodes.push({
+        nodes.set(`${entry.Service.Address}:${entry.Service.Port}`, {
           id: entry.Service.ID,
+          service: entry.Service.Service,
           host: entry.Service.Address,
           port: entry.Service.Port,
-          checks: checks,
-          isPass: isPass,
+          checks: checks.join(','),
         });
         if (isPass) {
           newAddList.push({
@@ -307,23 +235,7 @@ export class IpV4Resolver implements Resolver {
           });
         }
       });
-      const newArr = newAddList.map((n) => `${n.host}:${n.port}`);
-      const oldArr = this.addresses.map((n) => `${n.host}:${n.port}`);
-      const hasNew = newArr.filter((n) => !oldArr.includes(n));
-      const hasLost = oldArr.filter((n) => !newArr.includes(n));
-
-      if (hasNew.length || hasLost.length) {
-        console.log(`service changed new:${hasNew.join(',')} lost:${hasLost.join(',')}`);
-        this.addresses = newAddList.map((d) => {
-          return {
-            host: d.host,
-            port: d.port,
-          };
-        });
-        this.updateResolution();
-      }else{
-        console.log('service no change');
-      }
+      this.handleServiceChange(newAddList);
     });
 
     watcher.on('error', (err) => {
@@ -331,13 +243,40 @@ export class IpV4Resolver implements Resolver {
     });
   }
 
-  private handleServiceChange(list: ConsulDisc[]) {
+  private handleServiceChange(newAddList: ConsulDisc[]) {
+    const newArr = newAddList.map((n) => `${n.host}:${n.port}`);
+    const oldArr = this.addresses.map((n) => `${n.host}:${n.port}`);
+    const hasNew = newArr.filter((n) => !oldArr.includes(n));
+    const hasLost = oldArr.filter((n) => !newArr.includes(n));
 
+    if (hasNew.length || hasLost.length) {
+      console.log(
+        `service changed new:${hasNew.join(',')} lost:${hasLost.join(',')}`,
+      );
+      this.addresses = this.filterAddress(
+        newAddList.map((d) => {
+          return {
+            host: d.host,
+            port: d.port,
+          };
+        }),
+      );
+      this.updateResolution();
+    } else {
+      console.log('service no change');
+    }
   }
 
+  private filterAddress(adds: TcpSubchannelAddress[]) {
+    const map = new Map<string, TcpSubchannelAddress>();
+    for (const add of adds) {
+      map.set(`${add.host}:${add.port}`, add);
+    }
+    return Array.from(map.values());
+  }
 
   updateResolution(): void {
-    console.log('updateResolution', this.addresses);
+    console.log('updateResolution', this.addresses.length);
     process.nextTick(() => {
       if (this.error) {
         this.listener.onError(this.error);

@@ -5,12 +5,14 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import path from 'node:path';
 import dotenv from 'dotenv';
 import { getHostIp } from '@app/utils/getHostIp';
+import { getNodeEnv, setNodeEnv } from '@app/utils';
 dotenv.config();
 
 const IP = getHostIp();
 const HOSTNAME = process.env.HOSTNAME ?? 'localhost';
 const NODE_ENV = process.env.NODE_ENV;
 const PROTO_DIR = path.join(process.cwd(), process.env.PROTO_DIR);
+setNodeEnv('CONSUL_ID', Math.random().toString(36).substring(7));
 console.log('process.cwd()', process.cwd());
 console.log('HOSTNAME', process.env.HOSTNAME);
 console.log('HOST IP ', process.env.IP);
@@ -36,7 +38,8 @@ async function bootstrap() {
   const microserviceGRPC = app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      url: `${HOSTNAME}:${PORT_GRPC}`,
+      url: `localhost:${PORT_GRPC}`,
+    
       package: ['hero'],
       protoPath: [
         // hero
@@ -44,7 +47,7 @@ async function bootstrap() {
       ],
     },
   });
-  await app.startAllMicroservices();
+  const msc= await app.startAllMicroservices();
 
   await app.listen(PORT_HTTP).then(async (res) => {
     console.log('app listen on ', PORT_HTTP);
@@ -62,7 +65,7 @@ async function bootstrap() {
     await consulClient.agent.service
       .register({
         name: gName,
-        id: `${gName}-${Math.random().toString(36).substring(7)}`,
+        id: `${gName}-${getNodeEnv('CONSUL_ID')}`,
         address: IP,
         port: PORT_GRPC,
         check: {
