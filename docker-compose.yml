@@ -17,7 +17,7 @@ services:
       - app-network
 
   nest-rpc:
-    image: node:23-slim
+    image: node:20.14.0
     working_dir: /usr/src/nestapp
     volumes:
       - .:/usr/src/nestapp
@@ -34,7 +34,7 @@ services:
       - app-network
 
   nest-api:
-    image: node:23-slim
+    image: node:20.14.0
     container_name: nest-client
     working_dir: /usr/src/nestapp
     volumes:
@@ -48,6 +48,16 @@ services:
     depends_on:
       - nest-rpc
       - consul
+    networks:
+      - app-network
+
+  node-test:
+    image: node:23.9.0-slim
+    container_name: nest-tewst
+    working_dir: /usr/src/nestapp
+    volumes:
+      - .:/usr/src/nestapp
+    command: ['npx', './ipdk.js']
     networks:
       - app-network
 

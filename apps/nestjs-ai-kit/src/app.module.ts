@@ -55,7 +55,7 @@ const PROTO_DIR = path.join(process.cwd(), process.env.PROTO_DIR);
               transport: Transport.GRPC,
               options: {
                 // url: urls[0],
-                url: `dns:172.20.0.2:${port}`,
+                url: `dns:localhost:3010`,
                 package: ['hero'],
                 protoPath: [
                   // hero

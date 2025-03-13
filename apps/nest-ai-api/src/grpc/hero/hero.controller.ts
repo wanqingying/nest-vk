@@ -20,8 +20,12 @@ export class HeroController {
       { id: 1, name: 'John' },
       { id: 2, name: 'Doe' },
     ];
-    const one = items.find(({ id }) => id === data.id);
+    const one = items.find(({ id }) => id === data.id) || {
+      id: 0,
+      name: 'Not Found',
+    };
     one.name += ' - ' + process.env.HOSTNAME;
+    one.id = Number(process.env.PORT);
     return hero.Hero.create(one);
   }
 }

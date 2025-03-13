@@ -61,50 +61,50 @@ export class ChatController {
     return this.langchain.aiChatHello(q?.txt || 'hello');
   }
 
-  @Sse('/sse-chat')
-  getHelloV2(@Query() q: any, @Res() res: Response): Observable<MessageEvent> {
-    console.log('sse-chat', q);
-    return new Observable((subscriber) => {
-      const start_ms = Date.now();
-      let first_chunk_ms = 0;
-      let last_chunk_ms = 0;
-      this.chatService
-        .aiChatHelloV3(
-          q?.content ||
-            '写一个markdown ,内容是关于后端程序员职业发展的，多于200个字符串',
-        )
-        .then(async (stream) => {
-          for await (const chunk of stream) {
-            const txt = chunk.choices[0]?.delta?.content || '';
-            // console.log('next', chunk.choices[0]?.delta?.content || '');
-            // console.log('data', chunk);
-            subscriber.next(txt);
-            if (txt && first_chunk_ms === 0) {
-              first_chunk_ms = Date.now() - start_ms;
-            }
-          }
-          last_chunk_ms = Date.now() - start_ms;
-          console.log(
-            `first_chunk_ms: ${first_chunk_ms} last_chunk_ms: ${last_chunk_ms}`,
-          );
-          // subscriber.unsubscribe();
-          subscriber.next('SSE_END_OF_STREAM');
-          subscriber.complete();
-          res.end();
-        })
-        .catch((error) => {
-          // console.log('errror xxx');
-          subscriber.error(error);
-          res.end();
-        });
-    }).pipe(
-      map(
-        (data) =>
-          ({
-            type: 'message',
-            data: data,
-          }) as MessageEvent,
-      ),
-    );
-  }
+  // @Sse('/sse-chat')
+  // getHelloV2(@Query() q: any, @Res() res: Response): Observable<MessageEvent> {
+  //   console.log('sse-chat', q);
+  //   return new Observable((subscriber) => {
+  //     const start_ms = Date.now();
+  //     let first_chunk_ms = 0;
+  //     let last_chunk_ms = 0;
+  //     this.chatService
+  //       .aiChatHelloV3(
+  //         q?.content ||
+  //           '写一个markdown ,内容是关于后端程序员职业发展的，多于200个字符串',
+  //       )
+  //       .then(async (stream) => {
+  //         for await (const chunk of stream) {
+  //           const txt = chunk.choices[0]?.delta?.content || '';
+  //           // console.log('next', chunk.choices[0]?.delta?.content || '');
+  //           // console.log('data', chunk);
+  //           subscriber.next(txt);
+  //           if (txt && first_chunk_ms === 0) {
+  //             first_chunk_ms = Date.now() - start_ms;
+  //           }
+  //         }
+  //         last_chunk_ms = Date.now() - start_ms;
+  //         console.log(
+  //           `first_chunk_ms: ${first_chunk_ms} last_chunk_ms: ${last_chunk_ms}`,
+  //         );
+  //         // subscriber.unsubscribe();
+  //         subscriber.next('SSE_END_OF_STREAM');
+  //         subscriber.complete();
+  //         res.end();
+  //       })
+  //       .catch((error) => {
+  //         // console.log('errror xxx');
+  //         subscriber.error(error);
+  //         res.end();
+  //       });
+  //   }).pipe(
+  //     map(
+  //       (data) =>
+  //         ({
+  //           type: 'message',
+  //           data: data,
+  //         }) as MessageEvent,
+  //     ),
+  //   );
+  // }
 }
