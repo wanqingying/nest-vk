@@ -7,6 +7,7 @@
 6. npm run start:s1
 7. npm run start:s2
 8. npm run start:c
+9. visit http://localhost:3000/health/test-rpc
 
 pb
 pbjs -t static-module -w commonjs -o hero.js hero.proto
