@@ -1,7 +1,12 @@
 ## todo
 1. .env config
-2. langchain demo
-3. 
+2. start consul server: docker-compose up
+3. npm install
+4. npm run build:s
+5. npm run build:c
+6. npm run start:s1
+7. npm run start:s2
+8. npm run start:c
 
 pb
 pbjs -t static-module -w commonjs -o hero.js hero.proto
