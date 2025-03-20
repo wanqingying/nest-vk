@@ -45,6 +45,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/utils/tsconfig.lib.json"
       }
+    },
+    "nest-test-app": {
+      "type": "application",
+      "root": "apps/nest-test-app",
+      "entryFile": "main",
+      "sourceRoot": "apps/nest-test-app/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nest-test-app/tsconfig.app.json"
+      }
     }
   }
 }
