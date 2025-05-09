@@ -3,6 +3,65 @@
 services:
   # ...existing services...
 
+  dev:
+    image: node:20.14.0
+    container_name: dev
+    volumes:
+      - .:/app
+    working_dir: /app
+    # ports:
+      # - '8500:8500'
+    command:
+      ['./node_modules/.bin/ts-node', 'scripts/redis/node-redis2.ts']
+    networks:
+      - app-network
+    depends_on:
+      - cluster
+
+  dev2:
+    image: node:20.14.0
+    container_name: dev
+    volumes:
+      - .:/app
+    working_dir: /app
+    # ports:
+      # - '8500:8500'
+    command:
+      ['./node_modules/.bin/ts-node', 'scripts/kafka/scg.ts']
+    networks:
+      - app-network
+
+  dev-t:
+    image: node:20.14.0
+    container_name: dev
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports:
+      - '3007:3007'
+      - '9229:9229'
+    command:
+      ['npm', 'run', 'start:prod-t']
+    networks:
+      - app-network
+    depends_on:
+      - mongo
+      - mongo-init
+      - mongo-express
+
+  e2e:
+    image: node:20.14.0
+    container_name: e2e
+    volumes:
+      - .:/app
+    working_dir: /app
+    # ports:
+      # - '3007:3007'
+    command:
+      ['npm', 'run', 'test:e2e']
+    networks:
+      - app-network
+
   consul:
     image: consul:1.15.4
     container_name: consul
@@ -14,7 +73,211 @@ services:
     networks:
       - app-network
 
+  rsc:
+    image: node:20.14.0
+    container_name: run-script
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ['node', 'scripts/redis/node-redis.js']
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:6
+    container_name: mongo2
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    volumes:
+      - ./volumes/data/mongo-rep:/data/mongo/db
+      - ./volumes/config/mongo-rep:/etc/mongo
+      - ./volumes/config/mongo-rep/mongo-keyfile:/etc/mongo-keyfile
+      - ./volumes/config/mongo-rep/init.js:/docker-entrypoint-initdb.d/init.js
+    command:
+      [
+        'mongod',
+        '--replSet',
+        'rs0',
+        '--bind_ip_all',
+        '--keyFile',
+        '/etc/mongo-keyfile',
+      ]
+    networks:
+      - app-network
+
+  mongo-init:
+    image: mongo:6
+    container_name: mongo-init
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    command: >
+      bash -c "
+      sleep 5 &&
+      mongosh --host mongo2 --username user --password pass --authenticationDatabase admin --eval '
+        rs.initiate({
+          _id: \"rs0\",
+          members: [
+            { _id: 0, host: \"mongo2:27017\" }
+          ]
+        });
+      '
+      "
+
+  mongo-express:
+    image: mongo-express:1.0.2
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: user
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_URL: mongodb://user:pass@mongo2:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongo-init
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.4.5
+    container_name: mysql
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    volumes:
+      - ./volumes/data/mysql:/var/lib/mysql
+    networks:
+      - app-network
+
+  redis-1:
+    container_name: redis-cluster
+    hostname: redis-cluster
+    image: redis:latest
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6378:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-2:
+    image: redis:latest
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6390:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-3:
+    image: redis:latest
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6391:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-4:
+    image: redis:latest
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6392:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-5:
+    image: redis:latest
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6393:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  redis-6:
+    image: redis:latest
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6394:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  redis-7:
+    image: redis:latest
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6395:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  cluster:
+    image: redis:latest
+    command: >
+      bash -c "
+        sleep 15 &&
+        echo yes | redis-cli --cluster create redis-1:6379 redis-2:6379 redis-3:6379 redis-4:6379  redis-5:6379 redis-6:6379 redis-7:6379 --cluster-replicas 0
+      "
+    depends_on:
+      redis-1:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
+      redis-4:
+        condition: service_healthy
+      redis-5:
+        condition: service_healthy
+      redis-6:
+        condition: service_healthy
+      redis-7:
+        condition: service_healthy
+    networks:
+      - app-network
+
 
 networks:
   app-network:
+    name: app-network
     driver: bridge
+

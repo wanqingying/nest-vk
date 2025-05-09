@@ -1,0 +1,81 @@
+# version: "3.8"
+
+services:
+  # ...existing services...
+
+  dev:
+    image: node:20.14.0
+    container_name: dev
+    volumes:
+      - .:/app
+    working_dir: /app
+    # ports:
+      # - '8500:8500'
+    command:
+      ['./node_modules/.bin/ts-node', 'scripts/mongo/dev.ts']
+    networks:
+      - app-network
+
+  dev2:
+    image: node:20.14.0
+    container_name: dev
+    volumes:
+      - .:/app
+    working_dir: /app
+    # ports:
+      # - '8500:8500'
+    command:
+      ['./node_modules/.bin/ts-node', 'scripts/kafka/scg.ts']
+    networks:
+      - app-network
+
+  dev-t:
+    image: node:20.14.0
+    container_name: dev
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports:
+      - '3007:3007'
+    command:
+      ['npm', 'run', 'start:dev-t']
+    networks:
+      - app-network
+
+  e2e:
+    image: node:20.14.0
+    container_name: e2e
+    volumes:
+      - .:/app
+    working_dir: /app
+    # ports:
+      # - '3007:3007'
+    command:
+      ['npm', 'run', 'test:e2e']
+    networks:
+      - app-network
+
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    ports:
+      - '8500:8500'
+      - '8600:8600/udp'
+    command:
+      ['agent', '-server', '-bootstrap-expect=1', '-ui', '-client=0.0.0.0']
+    networks:
+      - app-network
+
+  rsc:
+    image: node:20.14.0
+    container_name: run-script
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ['node', 'scripts/redis/node-redis.js']
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

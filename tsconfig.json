@@ -25,17 +25,29 @@
       "@nest-rpc-client/*": [
         "apps/nest-rpc-client/src/*"
       ],
-      "@app/microrpc": [
+      "@libs/microrpc": [
         "libs/microrpc/src"
       ],
-      "@app/microrpc/*": [
+      "@libs/microrpc/*": [
         "libs/microrpc/src/*"
       ],
-      "@app/utils": [
+      "@libs/utils": [
         "libs/utils/src"
       ],
-      "@app/utils/*": [
+      "@libs/utils/*": [
         "libs/utils/src/*"
+      ],
+      "@libs/db": [
+        "libs/db/src"
+      ],
+      "@libs/db/*": [
+        "libs/db/src/*"
+      ],
+      "@libs/shared": [
+        "libs/shared/src"
+      ],
+      "@libs/shared/*": [
+        "libs/shared/src/*"
       ]
     },
     "inlineSources": true,

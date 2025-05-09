@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  kafka:
+    image: bitnami/kafka:3.9.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - flip-network
+
+  zookeeper:
+    image: bitnami/zookeeper:3.9.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    networks:
+      - flip-network
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    depends_on:
+      - kafka
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+      JVM_OPTS: "-Xms32M -Xmx64M"
+    networks:
+      - flip-network
+
+  jaeger:
+    image: jaegertracing/jaeger:2.4.0
+    container_name: jaeger
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - LOG_LEVEL=debug
+      - SPAN_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+    depends_on:
+      - prometheus
+    networks:
+      - flip-network
+
+  prometheus:
+    image: bitnami/prometheus:2.55.1
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./volumes/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - flip-network
+
+networks:
+  flip-network:
+    driver: bridge

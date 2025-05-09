@@ -8,9 +8,24 @@ import {
 } from '../../modules/twosum/twosum.module';
 // import { AModule, AService } from '../../modules/modulea/a.module';
 // import { BModule, BService } from '../../modules/moduleb/b.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Cat, CatDocument, CatSchema } from '@libs/db/mongo/schemas/cat.schema';
+import {
+  TestCollection,
+  TestDocument,
+  TestSchema,
+} from '@libs/db/mongo/schemas/test.schema';
+
 
 @Module({
-  imports: [TwosumModule, MathModule.forRoot(TwosumService)],
+  imports: [
+    TwosumModule,
+    MathModule.forRoot(TwosumService),
+    // MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
+    // MongooseModule.forFeature([
+    //   { name: TestCollection.name, schema: TestSchema },
+    // ]),
+  ],
   providers: [HealthService],
   controllers: [HealthController],
 })
