@@ -7,7 +7,6 @@ import {
 } from 'redis';
 // import { RedisCluterMultiCommandType } from 'redis/dist';
 import calculateSlot from 'cluster-key-slot';
-import { pipeline } from 'stream';
 
 async function getMasterNodes() {
   const client = createClient({
@@ -120,6 +119,15 @@ function getKvListV2(n: number) {
   }
   return res;
 }
+function getKvIListV2(n: number) {
+  const res: Record<string, string> = {};
+  for (let i = 0; i < n; i++) {
+    const key = `key${i}`;
+    const value = `value${i}`;
+    res[key] = value;
+  }
+  return res;
+}
 
 async function main3() {
   const cluster = (await getCluster()) as RedisClusterType;
@@ -158,18 +166,21 @@ async function main3() {
     console.log('redis cluster keys balance:', len.join(','));
   }
   const nodeshash: Map<string, string> = new Map();
-  const nodes = getMasterNodes2(cluster);
+  const nodes2: Map<string, RedisClientType> = new Map();
+  const nodes = cluster.masters;
 
   function getHashId(key: string) {
     const slot = calculateSlot(key);
     const master = cluster.slots[slot].master;
     return nodeshash.get(master.id);
   }
+
   for (let i = 1; i < 20000; i++) {
     const ns = calculateSlot(String(i));
     const st = cluster.slots[ns].master;
     if (!nodeshash.has(st.id)) {
       nodeshash.set(st.id, String(i));
+      nodes2.set(String(i), st.client as RedisClientType);
     }
     if (nodeshash.size >= nodes.length) {
       break;
@@ -177,25 +188,39 @@ async function main3() {
   }
 
   const map = new Map<string, RedisClientType>();
-
-  async function mSetV3(cmds: string[]) {
-    const clients = new Map<string, string[]>();
-    for (let i = 0; i < cmds.length; i += 2) {
-      const key = cmds[i];
-      const value = cmds[i + 1];
+  function batchKeys(keys: string[]) {
+    console.log('keys', keys);
+    const batches: Record<string, string[]> = {};
+    for (const key of keys) {
       const sid = getHashId(key);
-      if (!clients.has(sid)) {
-        clients.set(sid, []);
+      if (!batches[sid]) {
+        batches[sid] = [];
       }
-      clients.get(sid).push(key, value);
+      batches[sid].push(key);
     }
-    const ent = Array.from(clients.entries());
+    console.log('batches', batches);
+    return batches;
+  }
+  function batchKeysV2(keys: string[]) {
+    const batches: Record<string, string[]> = {};
+    for (const key of keys) {
+      const sid = getHashId(key);
+      if (!batches[sid]) {
+        batches[sid] = [];
+      }
+      batches[sid].push(key);
+    }
+    return batches;
+  }
+  async function mSetV3(obj: Record<string, string>) {
+    const bs = batchKeys(Array.from(Object.keys(obj)));
+
+    const ent = Array.from(Object.entries(bs));
     await Promise.all(
-      ent.map(async ([id, cmds]) => {
-        // const hashId = id.substring(0, 2) + id.substring(id.length - 2);
-        const hashId = id;
-        for (let i = 0; i < cmds.length; i += 2) {
-          cmds[i] = `{${hashId}}:${cmds[i]}`;
+      ent.map(async ([id, keys]) => {
+        const cmds: string[] = [];
+        for (let i = 0; i < keys.length; i += 2) {
+          cmds.push(`{${id}}:${keys[i]}`, obj[keys[i]]);
         }
         await cluster.mSet(cmds);
       }),
@@ -229,6 +254,66 @@ async function main3() {
     return results;
   }
 
+  async function mSetPx(obj: Record<string, string>, ttl: number) {
+    const batches = batchKeys(Array.from(Object.keys(obj)));
+
+    const msetScript = `
+    local ttl = tonumber(ARGV[1])
+    for i=1, #KEYS do
+      redis.call('SET', KEYS[i], ARGV[i+1], 'PX', ttl)
+    end
+    return 'OK'
+  `;
+    const entry = Array.from(Object.entries(batches));
+
+    await Promise.all(
+      entry.map(async ([id, batchKeys], i) => {
+        const keys = [];
+        const values = [];
+
+        for (let i = 0; i < batchKeys.length; i++) {
+          keys.push(`{${id}}:${batchKeys[i]}`);
+          values.push(obj[batchKeys[i]]);
+        }
+        const master = nodes2.get(id);
+        console.log('set ', id, keys, values);
+        await master.eval(msetScript, {
+          keys,
+          arguments: [String(ttl), ...values],
+        });
+      }),
+    );
+  }
+
+  async function ttl(keys: string[]): Promise<number[]> {
+    const batches = batchKeys(keys);
+    const entry = Array.from(Object.entries(batches));
+    const results: Record<string, number> = {};
+    const batchTTLScript = `
+    local keys = KEYS  
+    local result = {}  
+
+    for i, key in ipairs(keys) do
+        local ttl = redis.call("PTTL", key)  
+        result[i] = ttl  
+    end
+
+    return result  
+    `;
+    await Promise.all(
+      entry.map(async ([id, batchKeys]) => {
+        const master = nodes2.get(id);
+        const res = (await master.eval(batchTTLScript, {
+          keys: batchKeys.map((k) => `{${id}}:${k}`),
+        })) as number[];
+        for (let i = 0; i < batchKeys.length; i++) {
+          results[batchKeys[i]] = res[i];
+        }
+      }),
+    );
+    return keys.map((k) => results[k]);
+  }
+
   async function setV3(cmds: string[]) {
     const rawCmds: string[][] = [];
     for (let i = 0; i < cmds.length; i += 2) {
@@ -249,24 +334,18 @@ async function main3() {
       hashKeys: string[],
     ) => void,
   ) {
-    const batches = new Map<string, string[]>();
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const sid = getHashId(key);
-      if (!batches.has(sid)) {
-        batches.set(sid, []);
-      }
-      batches.get(sid).push(key);
-    }
-    const entry = Array.from(batches.entries());
+    const batches = batchKeys(keys);
+    const entry = Array.from(Object.entries(batches));
     const results = {};
     await Promise.all(
       entry.map(async ([hashId, keys]) => {
         const pipeline = cluster.multi();
         const hashKeys = keys.map((k) => `{${hashId}}:${k}`);
+        const tStart53 = Date.now();
         callback(pipeline, keys, hashKeys);
-        const tStart = Date.now();
+
         const res = await pipeline.exec();
+        // console.log('pipe exec cost=', Date.now() - tStart53);
         for (let i = 0; i < keys.length; i++) {
           results[keys[i]] = res[i];
         }
@@ -283,34 +362,23 @@ async function main3() {
     );
   }
 
-  const list = getKvList(5000);
-  const kv2 = getKvListV2(300);
-  const kv3 = getKvListV2(300);
+  const kv2 = getKvListV2(30000);
+  const kv3 = getKvIListV2(30000);
   console.log('test with 30000 kv (usual feature size)');
   const kvList3 = Object.entries(kv3).flat();
   const keys3 = Array.from(Object.keys(kv3));
 
-  const tStart7 = Date.now();
-  await mSetV3(kvList3);
-  //   console.log('mSetCost=', Date.now() - tStart7);
-  // const tStart2 = Date.now();
-  // await setV3(kvList3);
-  //   console.log('clusterSetCost=', Date.now() - tStart2);
+  //   const tStart7 = Date.now();
+  //   await mSetV3(kvList3);
+  //     console.log('mSetCost=', Date.now() - tStart7);
 
   //   const tStart3 = Date.now();
   //   await mGetV3(keys3);
   //   console.log('mGet Cost=', Date.now() - tStart3);
 
-  setInterval(async () => {
-    const tStart3 = Date.now();
-    await mGetV3(keys3);
-    console.log('mGet Cost=', Date.now() - tStart3);
-    cluster.publish('ex_m_ch_m_get', 'hello');
-  }, 12000);
-
-  const tStart4 = Date.now();
-  await getV3(keys3);
-  console.log('cluster.get cost=', Date.now() - tStart4);
+  //   const tStart4 = Date.now();
+  //   await getV3(keys3);
+  //   console.log('cluster.get cost=', Date.now() - tStart4);
 
   // const tStart5 = Date.now();
   // await pipe(Array.from(Object.keys(kv2)), (pipeline, keys, hashKeys) => {
@@ -320,15 +388,55 @@ async function main3() {
   // });
   // console.log('pipe set cost=', Date.now() - tStart5);
 
-  // const tStart6 = Date.now();
-  // const res = await pipe(keys3, (pipeline, keys, hashKeys) => {
+  //   const tStart6 = Date.now();
+  //   const res = await pipe(keys3, (pipeline, keys, hashKeys) => {
+  //     for (let i = 0; i < keys.length; i++) {
+  //       pipeline.get(hashKeys[i]);
+  //     }
+  //   });
+  //   console.log('pipe get cost=', Date.now() - tStart6, res[keys3[0]]);
+
+  // const tStart12 = Date.now();
+  // await mSetV3(kv3);
+  // console.log('mSetV3 ok ', Date.now() - tStart12);
+  // await flushAllKeysInCluster(cluster);
+
+  // const tStart13 = Date.now();
+  // await mSetPx(kv3, 2000);
+  // console.log('mSetPx ok ', Date.now() - tStart13);
+  // await flushAllKeysInCluster(cluster);
+
+  // const tStart2 = Date.now();
+  // await setV3(kvList3);
+  // console.log('clusterSetCost=', Date.now() - tStart2);
+  // await flushAllKeysInCluster(cluster);
+
+  // const tStart8 = Date.now();
+  // await pipe(keys3, async (pipeline, keys, hashKeys) => {
   //   for (let i = 0; i < keys.length; i++) {
-  //     pipeline.get(hashKeys[i]);
+  //     pipeline.set(hashKeys[i], kv3[keys[i]], {
+  //       PX: 2000,
+  //     });
   //   }
   // });
-  // console.log('pipe get cost=', Date.now() - tStart6, res[keys3[0]]);
+  // console.log('pipe set cost=', Date.now() - tStart8);
+
+  const records = {
+    'fea:post:ranking_v2_score:id_empty:post_score': '"_empty_"',
+    'fea:post:ranking_v2_score:id_a:post_score': '"id-a-val"',
+    'fea:post:ranking_v2_score:id_b:post_score': '"id-b-val"',
+    'fea:post:ranking_v2_score:hm6ztslrp:post_score': '"hm6ztslrp-val"',
+    'fea:post:ranking_v2_score:inbdojtf9w:post_score': '"inbdojtf9w-val"',
+  };
+
+  await mSetPx(records, 3000);
+  const res = await mGetV3(Array.from(Object.keys(records)));
+  const ttl3 = await ttl(Array.from(Object.keys(records)));
+  console.log('ttl', ttl3);
+
+  console.log('redis result', res);
+
   await printClusterKeysCont();
 }
 
-// getMasterNodes().catch(console.error);
 main3().catch(console.error);
