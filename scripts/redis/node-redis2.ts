@@ -74,6 +74,13 @@ async function getCluster() {
   cluster.on('node error', (err) => {
     console.log('redis node error', err);
   });
+  cluster.on('message', (channel, message) => {
+    console.log('Received notification:', channel, message);
+    if (channel === '__redis__:cluster') {
+      // 收到集群配置变更通知，获取最新的槽位分配
+      // updateClusterSlots();
+    }
+  });
   console.log('cluster do foo');
 
   await cluster.connect();
@@ -107,9 +114,6 @@ function getKvList(n: number) {
 function getKvListV2(n: number) {
   const res: Record<string, string> = {};
   for (let i = 0; i < n; i++) {
-    //   list.push(Math.random().toString(36).substring(2), `value${i}`);
-    // keys.push(Math.random().toString(36).substring(2));
-    // vals.push(`value${i}`);
     const key = Math.random().toString(36).substring(2);
     const value = `value${i}`;
     res[key] = value;
@@ -119,6 +123,29 @@ function getKvListV2(n: number) {
 
 async function main3() {
   const cluster = (await getCluster()) as RedisClusterType;
+  // 订阅集群配置变更通知
+  cluster.subscribe('__redis__:cluster', (channel, message) => {
+    console.log('Received subscribe notification:', channel, message);
+    if (channel === '__redis__:cluster') {
+      console.log(
+        'Received cluster configuration change notification:',
+        message,
+      );
+      // 收到集群配置变更通知，获取最新的槽位分配
+      // updateClusterSlots();
+    }
+  });
+  cluster.subscribe('ex_m_ch_m_get', (channel, message) => {
+    console.log('Received subscribe notification:', channel, message);
+    if (channel === '__redis__:cluster') {
+      console.log(
+        'Received cluster configuration change notification:',
+        message,
+      );
+      // 收到集群配置变更通知，获取最新的槽位分配
+      // updateClusterSlots();
+    }
+  });
   await flushAllKeysInCluster(cluster);
 
   async function printClusterKeysCont() {
@@ -257,8 +284,8 @@ async function main3() {
   }
 
   const list = getKvList(5000);
-  const kv2 = getKvListV2(30000);
-  const kv3 = getKvListV2(30000);
+  const kv2 = getKvListV2(300);
+  const kv3 = getKvListV2(300);
   console.log('test with 30000 kv (usual feature size)');
   const kvList3 = Object.entries(kv3).flat();
   const keys3 = Array.from(Object.keys(kv3));
@@ -266,35 +293,40 @@ async function main3() {
   const tStart7 = Date.now();
   await mSetV3(kvList3);
   //   console.log('mSetCost=', Date.now() - tStart7);
-  const tStart2 = Date.now();
-  await setV3(kvList3);
+  // const tStart2 = Date.now();
+  // await setV3(kvList3);
   //   console.log('clusterSetCost=', Date.now() - tStart2);
 
+  //   const tStart3 = Date.now();
+  //   await mGetV3(keys3);
+  //   console.log('mGet Cost=', Date.now() - tStart3);
 
-//   const tStart3 = Date.now();
-//   await mGetV3(keys3);
-//   console.log('mGet Cost=', Date.now() - tStart3);
+  setInterval(async () => {
+    const tStart3 = Date.now();
+    await mGetV3(keys3);
+    console.log('mGet Cost=', Date.now() - tStart3);
+    cluster.publish('ex_m_ch_m_get', 'hello');
+  }, 12000);
+
   const tStart4 = Date.now();
   await getV3(keys3);
   console.log('cluster.get cost=', Date.now() - tStart4);
 
+  // const tStart5 = Date.now();
+  // await pipe(Array.from(Object.keys(kv2)), (pipeline, keys, hashKeys) => {
+  //   for (let i = 0; i < keys.length; i++) {
+  //     pipeline.set(hashKeys[i], kv2[keys[i]]);
+  //   }
+  // });
+  // console.log('pipe set cost=', Date.now() - tStart5);
 
-    // const tStart5 = Date.now();
-    // await pipe(Array.from(Object.keys(kv2)), (pipeline, keys, hashKeys) => {
-    //   for (let i = 0; i < keys.length; i++) {
-    //     pipeline.set(hashKeys[i], kv2[keys[i]]);
-    //   }
-    // });
-    // console.log('pipe set cost=', Date.now() - tStart5);
-
-
-    const tStart6 = Date.now();
-    const res = await pipe(keys3, (pipeline, keys, hashKeys) => {
-      for (let i = 0; i < keys.length; i++) {
-        pipeline.get(hashKeys[i]);
-      }
-    });
-    console.log('pipe get cost=', Date.now() - tStart6, res[keys3[0]]);
+  // const tStart6 = Date.now();
+  // const res = await pipe(keys3, (pipeline, keys, hashKeys) => {
+  //   for (let i = 0; i < keys.length; i++) {
+  //     pipeline.get(hashKeys[i]);
+  //   }
+  // });
+  // console.log('pipe get cost=', Date.now() - tStart6, res[keys3[0]]);
   await printClusterKeysCont();
 }
 

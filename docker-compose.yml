@@ -4,7 +4,7 @@ services:
   # ...existing services...
 
   dev:
-    image: node:20.14.0
+    image: node:22.14.0
     container_name: dev
     volumes:
       - .:/app
@@ -19,7 +19,7 @@ services:
       - cluster
 
   dev2:
-    image: node:20.14.0
+    image: node:22.14.0
     container_name: dev
     volumes:
       - .:/app
@@ -32,7 +32,7 @@ services:
       - app-network
 
   dev-t:
-    image: node:20.14.0
+    image: node:22.14.0
     container_name: dev
     volumes:
       - .:/app
@@ -50,7 +50,7 @@ services:
       - mongo-express
 
   e2e:
-    image: node:20.14.0
+    image: node:22.14.0
     container_name: e2e
     volumes:
       - .:/app
@@ -162,7 +162,7 @@ services:
   redis-1:
     container_name: redis-cluster
     hostname: redis-cluster
-    image: redis:latest
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6378:6379"
@@ -175,7 +175,7 @@ services:
       retries: 3
 
   redis-2:
-    image: redis:latest
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6390:6379"
@@ -188,7 +188,7 @@ services:
       retries: 3
 
   redis-3:
-    image: redis:latest
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6391:6379"
@@ -201,7 +201,7 @@ services:
       retries: 3
 
   redis-4:
-    image: redis:latest
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6392:6379"
@@ -214,7 +214,7 @@ services:
       retries: 3
 
   redis-5:
-    image: redis:latest
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6393:6379"
@@ -226,7 +226,8 @@ services:
       timeout: 5s
       retries: 3
   redis-6:
-    image: redis:latest
+    container_name: redis-6
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6394:6379"
@@ -238,7 +239,8 @@ services:
       timeout: 5s
       retries: 3
   redis-7:
-    image: redis:latest
+    container_name: redis-7
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6395:6379"
@@ -251,11 +253,11 @@ services:
       retries: 3
 
   cluster:
-    image: redis:latest
+    image: redis:7.4.2
     command: >
       bash -c "
         sleep 15 &&
-        echo yes | redis-cli --cluster create redis-1:6379 redis-2:6379 redis-3:6379 redis-4:6379  redis-5:6379 redis-6:6379 redis-7:6379 --cluster-replicas 0
+        echo yes | redis-cli --cluster create redis-1:6379 redis-2:6379 redis-3:6379 redis-4:6379  redis-5:6379 --cluster-replicas 0
       "
     depends_on:
       redis-1:
@@ -268,12 +270,31 @@ services:
         condition: service_healthy
       redis-5:
         condition: service_healthy
-      redis-6:
-        condition: service_healthy
-      redis-7:
-        condition: service_healthy
     networks:
       - app-network
+
+  cluster-extend:
+    image: redis:7.4.2
+    command: >
+      bash -c "
+        sleep 20 &&
+        redis-cli --cluster add-node redis-6:6379 redis-1:6379 &&
+        redis-cli --cluster add-node redis-7:6379 redis-1:6379 &&
+        sleep 5 &&
+        redis-cli --cluster rebalance redis-1:6379
+      "
+    networks:
+      - app-network
+
+  cluster-fix:
+      image: redis:7.4.2
+      volumes:
+        - ./scripts:/scripts
+      command: ["bash", "/scripts/rm_redis_cluster.sh"]
+      profiles:
+        - delete-nodes
+      networks:
+        - app-network
 
 
 networks:
