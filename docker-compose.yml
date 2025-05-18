@@ -27,7 +27,7 @@ services:
     # ports:
       # - '8500:8500'
     command:
-      ['./node_modules/.bin/ts-node', 'scripts/kafka/scg.ts']
+      ['./node_modules/.bin/ts-node', 'scripts/bench/test.ts']
     networks:
       - app-network
 
