@@ -1,6 +1,6 @@
 import Benchmark, { Deferred, Event } from 'benchmark';
 var suite = new Benchmark.Suite();
-import { RedisClusterCmd } from './cluster';
+import { RedisClusterBatch } from './cluster';
 import { batchFn } from './batchfn';
 
 // add tests
@@ -13,7 +13,7 @@ const batchKv5000 = Object.fromEntries(
 const batchKeys5000 = Array.from(Object.keys(batchKv5000));
 
 async function main() {
-  const cluster = await RedisClusterCmd.getInstance();
+  const cluster = await RedisClusterBatch.getInstance();
   await cluster.mSetPx(
     {
       key1: 'value1',
@@ -25,7 +25,7 @@ async function main() {
   await cluster.client.set('key2', 'value2', {
     PX: 70000,
   });
-  
+
 
   await cluster.client.zAdd(
     'zset1',

@@ -1,0 +1,56 @@
+version: '3.6'
+
+services:
+  redis-1:
+    container_name: redis-cluster-1
+    hostname: redis-cluster-1
+    image: redis:7.4.2
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 6380
+    network_mode: host
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-p', '6380', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-2:
+    container_name: redis-cluster-2
+    hostname: redis-cluster-2
+    image: redis:7.4.2
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 6381
+    network_mode: host
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-p', '6381', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-3:
+    container_name: redis-cluster-3
+    hostname: redis-cluster-3
+    image: redis:7.4.2
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 6382
+    network_mode: host
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-p', '6382', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-cluster-init:
+    image: redis:7.4.2
+    network_mode: host
+    command: >
+      bash -c "
+        sleep 15 &&
+        echo yes | redis-cli --cluster create 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 --cluster-replicas 0
+      "
+    depends_on:
+      redis-1:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
+
+    

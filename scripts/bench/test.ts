@@ -1,7 +1,7 @@
-import { getCluster, RedisClusterCmd } from './cluster';
+import { getCluster, RedisClusterBatch } from './cluster';
 
 async function main() {
-  const cmd = new RedisClusterCmd({
+  const cmd = new RedisClusterBatch({
     host: 'redis-cluster',
     port: 6379,
     slotsRefreshInterval: 5000,

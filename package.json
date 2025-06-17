@@ -27,6 +27,7 @@
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org qingying --project node-nestjs ./dist/apps/nest-ai-api && sentry-cli sourcemaps upload --org qingying --project node-nestjs ./dist"
   },
   "dependencies": {
+    "@flip/utils": "^2.78.0",
     "@grpc/grpc-js": "^1.13.0",
     "@grpc/proto-loader": "^0.7.13",
     "@kafkajs/confluent-schema-registry": "^3.8.0",
@@ -44,9 +45,11 @@
     "@opentelemetry/sdk-metrics": "^2.0.0",
     "@opentelemetry/sdk-node": "^0.200.0",
     "@opentelemetry/sdk-trace-node": "^2.0.0",
+    "@statsig/statsig-node-core": "^0.4.3",
     "@types/benchmark": "^2.1.5",
     "@types/ioredis": "^4.28.10",
     "@types/lodash": "^4.17.16",
+    "axios": "^1.9.0",
     "benchmark": "^2.1.4",
     "cluster-key-slot": "^1.1.2",
     "consul": "^2.0.1",

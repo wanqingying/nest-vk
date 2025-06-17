@@ -1,43 +1,6 @@
-version: "3.6"
+version: '3.6'
 
 services:
-
-  # mongo:
-  #   image: mongo:6
-  #   container_name: flip-mongo
-  #   volumes:
-  #     - ./vol/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-  #     - ./vol/mongo/data:/data/db
-  #   ports:
-  #     - "27017:27017"
-  #   networks:
-  #     - app-network
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=fuser
-  #     - MONGO_INITDB_ROOT_PASSWORD=fpass
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 4G
-
-  # mongo-express:
-  #   image: mongo-express:1.0.2
-  #   container_name: mongo-express
-  #   environment:
-  #     ME_CONFIG_BASICAUTH_USERNAME: fuser
-  #     ME_CONFIG_BASICAUTH_PASSWORD: fpass
-  #     # ME_CONFIG_MONGODB_PORT: 27017
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: fuser
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: fpass
-  #     # ME_CONFIG_MONGODB_SERVER: flip-mongo
-  #     ME_CONFIG_MONGODB_URL: mongodb://fuser:fpass@flip-mongo:27017
-  #   ports:
-  #     - "8087:8081"
-  #   depends_on:
-  #     - mongo
-  #   networks:
-  #     - app-network
-
   localstack:
     image: localstack/localstack:2.3.2
     hostname: localstack-p-viewer
@@ -56,7 +19,7 @@ services:
     env_file: ./env.example
     depends_on:
       - localstack
-    restart: "no"
+    restart: 'no'
     entrypoint: sh -c /configure-localstack.sh
     volumes:
       - './tools/configure-localstack.sh:/configure-localstack.sh'
@@ -64,10 +27,10 @@ services:
       - app-network
 
   redis:
-    image: redis:6.2
+    image: redis:7.4.2
     container_name: flip-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - app-network
     deploy:
@@ -78,46 +41,46 @@ services:
   redis-1:
     container_name: redis-cluster
     hostname: redis-cluster
-    image: redis:latest
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
-      - "6378:6379"
+      - '6378:6379'
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 3
 
   redis-2:
-    image: redis:latest
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
-      - "6390:6379"
+      - '6390:6379'
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 3
 
   redis-3:
-    image: redis:latest
+    image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
-      - "6391:6379"
+      - '6391:6379'
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 3
 
   redis-cluster-init:
-    image: redis:latest
+    image: redis:7.4.2
     command: >
       bash -c "
         sleep 15 &&
@@ -137,8 +100,8 @@ services:
     image: rabbitmq:3.9-management-alpine
     container_name: flip-broker
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - '5672:5672'
+      - '15672:15672'
     environment:
       - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
       - RABBITMQ_DEFAULT_USER=rabbitmq
@@ -150,8 +113,6 @@ services:
       resources:
         limits:
           memory: 2G
-
-
 
 networks:
   app-network:

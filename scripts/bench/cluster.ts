@@ -8,6 +8,7 @@ import {
   RedisClusterType,
   RedisClusterOptions,
   RedisClientType,
+  defineScript,
 } from 'redis';
 
 export interface ClusterNodeConfig {
@@ -98,22 +99,27 @@ export class ClusterConfig {
   public slotsRefreshInterval: number = 5000;
 }
 
-export class RedisClusterCmd {
+export interface LuaScriptConfig {
+  uniqueName: string;
+  script: string;
+  sha?: string;
+}
+
+export class RedisClusterBatch {
   private cluster: RedisClusterType;
   private instanceId = Math.random().toString(36).substring(4);
   // Map<master-id, hashtag> each {hashtag}xxx is distribute to the master node
   private hashtags = new Map<string, string>();
   private masterWithTags = new Map<string, RedisClientType>();
+  private scripts = new Map<string, LuaScriptConfig>();
   private logger = console;
-  public constructor(private readonly config: ClusterConfig) {
-    // this.cluster = _cluster;
-  }
+  public constructor(private readonly config: ClusterConfig) {}
 
-  private static instance: RedisClusterCmd;
+  private static instance: RedisClusterBatch;
 
   public static async getInstance() {
     if (this.instance) return this.instance;
-    const cmd = new RedisClusterCmd({
+    const cmd = new RedisClusterBatch({
       host: 'redis-cluster',
       port: 6379,
       slotsRefreshInterval: 5000,
@@ -123,6 +129,18 @@ export class RedisClusterCmd {
     this.instance = cmd;
     return cmd;
   }
+
+  //   public async loadScripts(scripts: LuaScriptConfig[]) {
+  // 	const res=await Promise.all(
+  // 		scripts.map(async sc=>{
+  // 			return this.cluster.masters.forEach(async n=>{
+  // 				const client=n.client as RedisClientType;
+  // 				client.scriptLoad(sc.script)
+  // 			})
+  // 		})
+  // 	)
+
+  //   }
 
   public async init(): Promise<void> {
     await this.onModuleInit();
