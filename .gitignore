@@ -62,3 +62,4 @@ zdev_local/*
 .vscode
 volumes
 infra/vm/data
+infra/mysql-data
