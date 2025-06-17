@@ -15,7 +15,8 @@ import {
   TestDocument,
   TestSchema,
 } from '@libs/db/mongo/schemas/test.schema';
-
+import { PrometheusService } from './prom.service';
+import { MetricsController } from './prom.controller';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import {
     //   { name: TestCollection.name, schema: TestSchema },
     // ]),
   ],
-  providers: [HealthService],
-  controllers: [HealthController],
+  providers: [HealthService, PrometheusService],
+  controllers: [HealthController, MetricsController],
 })
 export class HealthModule {}

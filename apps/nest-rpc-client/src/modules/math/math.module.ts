@@ -6,7 +6,6 @@ import { MathService, TwoSumService } from './math.service';
 })
 export class MathModule {
   public static forFeature(twosum: any): DynamicModule {
-
     return {
       module: MathModule,
       providers: [

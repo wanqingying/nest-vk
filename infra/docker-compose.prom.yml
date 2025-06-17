@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+      
+  prom-dev:
+    image: prom/prometheus:v3.4.0
+    container_name: prometheus-dev
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./vm/config/prom.yml:/etc/prometheus/prometheus.yml
+      - ./vm/data/prom:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: app-network
+    driver: bridge

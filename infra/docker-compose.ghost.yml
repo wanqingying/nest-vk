@@ -1,0 +1,40 @@
+services:
+  ghost:
+    image: ghost:5.120.2
+    restart: always
+    ports:
+      - 8089:2368
+    environment:
+      # see https://ghost.org/docs/config/#configuration-options
+      database__client: mysql
+      database__connection__host: gh-db
+      database__connection__user: root
+      database__connection__password: example
+      database__connection__database: ghost
+      NODE_ENV: development
+      # this url value is just an example, and is likely wrong for your environment!
+      url: http://localhost:8089
+      # contrary to the default mentioned in the linked documentation, this image defaults to NODE_ENV=production (so development mode needs to be explicitly specified if desired)
+      #NODE_ENV: development
+    volumes:
+      - ./vm/data/ghost:/var/lib/ghost/content
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.4.5
+    container_name: gh-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    # volumes:
+    #   - ./vm/data/ghost/mysql:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: app-network
+    driver: bridge

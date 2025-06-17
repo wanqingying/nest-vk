@@ -20,7 +20,6 @@ console.log('PROTO_DIR', PROTO_DIR);
 const HOST_DK = 'host.docker.internal';
 const HEALTH_HOST = NODE_ENV === 'dev' ? HOST_DK : IP;
 
-
 async function bootstrap() {
   const PORT_HTTP = Number(process.env.PORT ?? 3004);
   const PORT_GRPC = PORT_HTTP + 2;

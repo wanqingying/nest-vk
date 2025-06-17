@@ -79,7 +79,7 @@ export class ConsulClient extends EventEmitter {
   }
 
   public async initStateWatcher() {
-    console.log('initStateWatcher', this.serviceName ,getConsulHost());
+    console.log('initStateWatcher', this.serviceName, getConsulHost());
     const consulClient = this.client;
     const watcher = consulClient.watch({
       method: consulClient.health.checks,

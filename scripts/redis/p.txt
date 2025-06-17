@@ -1,0 +1,56 @@
+Statistical profiling result from .\isolate-0000000000E3A000-20752-v8.log, (361 ticks, 0 unaccounted, 0 excluded).
+
+ [Shared libraries]:
+   ticks  total  nonlib   name
+    335   92.8%          C:\Windows\SYSTEM32\ntdll.dll
+     13    3.6%          E:\Program Files\nodejs\node.exe
+
+ [JavaScript]:
+   ticks  total  nonlib   name
+     10    2.8%   76.9%  JS: *arrsort E:\code\github\nest-vk\scripts\redis\rcs.js:19:17
+      2    0.6%   15.4%  JS: *<anonymous> E:\code\github\nest-vk\scripts\redis\rcs.js:23:10
+      1    0.3%    7.7%  JS: +arrsort E:\code\github\nest-vk\scripts\redis\rcs.js:19:17
+
+ [C++]:
+   ticks  total  nonlib   name
+
+ [Summary]:
+   ticks  total  nonlib   name
+     13    3.6%  100.0%  JavaScript
+      0    0.0%    0.0%  C++
+      2    0.6%   15.4%  GC
+    348   96.4%          Shared libraries
+
+ [C++ entry points]:
+   ticks    cpp   total   name
+
+ [Bottom up (heavy) profile]:
+  Note: percentage shows a share of a particular caller in the total
+  amount of its parent calls.
+  Callers occupying less than 1.0% are not shown.
+
+   ticks parent  name
+    335   92.8%  C:\Windows\SYSTEM32\ntdll.dll
+
+     13    3.6%  E:\Program Files\nodejs\node.exe
+      2   15.4%    JS: ~<anonymous> E:\code\github\nest-vk\scripts\redis\rcs.js:35:13
+      2   15.4%    JS: ^compileForInternalLoader node:internal/bootstrap/realm:388:27
+      2  100.0%      JS: ^requireBuiltin node:internal/bootstrap/realm:425:24
+      1   50.0%        JS: ~<anonymous> node:tty:1:1
+      1  100.0%          JS: ^compileForInternalLoader node:internal/bootstrap/realm:388:27
+      1  100.0%            JS: ^requireBuiltin node:internal/bootstrap/realm:425:24
+      1   50.0%        JS: ~<anonymous> node:stream:1:1
+      1  100.0%          JS: ^compileForInternalLoader node:internal/bootstrap/realm:388:27
+      1  100.0%            JS: ^requireBuiltin node:internal/bootstrap/realm:425:24
+      2   15.4%    JS: ^arrsort E:\code\github\nest-vk\scripts\redis\rcs.js:19:17
+      2  100.0%      JS: ~<anonymous> E:\code\github\nest-vk\scripts\redis\rcs.js:35:13
+      2   15.4%    E:\Program Files\nodejs\node.exe
+      1   50.0%      JS: ~<anonymous> node:internal/main/run_main_module:1:1
+      1   50.0%      JS: *arrsort E:\code\github\nest-vk\scripts\redis\rcs.js:19:17
+      1  100.0%        JS: ~<anonymous> E:\code\github\nest-vk\scripts\redis\rcs.js:35:13
+      1    7.7%    JS: ~arrsort E:\code\github\nest-vk\scripts\redis\rcs.js:19:17
+      1  100.0%      JS: ~<anonymous> E:\code\github\nest-vk\scripts\redis\rcs.js:35:13
+
+     10    2.8%  JS: *arrsort E:\code\github\nest-vk\scripts\redis\rcs.js:19:17
+     10  100.0%    JS: ~<anonymous> E:\code\github\nest-vk\scripts\redis\rcs.js:35:13
+

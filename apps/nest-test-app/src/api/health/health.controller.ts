@@ -16,6 +16,8 @@ import {
   TestDocument,
   TestSchema,
 } from '@libs/db/mongo/schemas/test.schema';
+import { countTest, ObserveHttp } from './prom-helper';
+import { HttpWrap } from './dec';
 
 const gid = (): string => Math.random().toString(36).substring(3);
 
@@ -30,6 +32,7 @@ export class HealthController {
   private array = [];
 
   @Get()
+  @HttpWrap()
   test() {
     const t1 = Date.now();
     for (let i = 0; i < 100000; i++) {
@@ -39,6 +42,7 @@ export class HealthController {
     for (let i = 0; i < 10000000; i++) {
       ik += 1;
     }
+    countTest(1, { method: 'get', path: 'health' });
     return Date.now() - t1;
   }
   @Get('v2')

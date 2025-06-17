@@ -10,7 +10,7 @@ import {
 import { HealthService } from './health.service';
 import { CreateHealthDto } from './dto/create-health.dto';
 import { UpdateHealthDto } from './dto/update-health.dto';
-import { getNodeEnv ,getServerNodeId} from '@app/utils';
+import { getNodeEnv, getServerNodeId } from '@app/utils';
 
 @Controller('health')
 export class HealthController {

@@ -1,5 +1,4 @@
 import Benchmark, { Deferred, Event } from 'benchmark';
-var suite = new Benchmark.Suite();
 import { RedisClusterCmd } from './cluster';
 import { batchFn } from './batchfn';
 
@@ -25,7 +24,6 @@ async function main() {
   await cluster.client.set('key2', 'value2', {
     PX: 70000,
   });
-  
 
   await cluster.client.zAdd(
     'zset1',

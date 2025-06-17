@@ -6,7 +6,6 @@ import {
 } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-
 @Schema({
   collection: 'test_collection',
 })
@@ -25,7 +24,6 @@ export class TestCollection {
 }
 
 export type TestDocument = HydratedDocument<TestCollection>;
-
 
 // const Dog=DefinitionsFactory.createForClass(class)
 

@@ -9,14 +9,14 @@ console.log('MongoDB connection string: mongodb://user:pass@');
 @Module({
   imports: [
     HealthModule,
-    MongooseModule.forRoot('mongodb://mongo2:27017', {
-      onConnectionCreate: (conn) => {
-        console.log('Mongo Connection created');
-      },
-      dbName: 'nest',
-      user: 'user',
-      pass: 'pass',
-    }),
+    // MongooseModule.forRoot('mongodb://mongo2:27017', {
+    //   onConnectionCreate: (conn) => {
+    //     console.log('Mongo Connection created');
+    //   },
+    //   dbName: 'nest',
+    //   user: 'user',
+    //   pass: 'pass',
+    // }),
   ],
   controllers: [],
   providers: [

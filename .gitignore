@@ -61,3 +61,4 @@ zdev_local/*
 .yarn
 .vscode
 volumes
+infra/vm/data

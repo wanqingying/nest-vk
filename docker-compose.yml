@@ -4,7 +4,7 @@ services:
   # ...existing services...
 
   dev:
-    image: node:22.14.0
+    image: node:22.16-bookworm-slim
     container_name: dev
     volumes:
       - .:/app
@@ -12,11 +12,9 @@ services:
     # ports:
       # - '8500:8500'
     command:
-      ['./node_modules/.bin/ts-node', 'scripts/redis/node-redis2.ts']
+      ['./node_modules/.bin/ts-node', 'scripts/redis/key-event.ts']
     networks:
       - app-network
-    depends_on:
-      - cluster
 
   dev2:
     image: node:22.14.0
@@ -27,13 +25,13 @@ services:
     # ports:
       # - '8500:8500'
     command:
-      ['./node_modules/.bin/ts-node', 'scripts/bench/test.ts']
+      ['./node_modules/.bin/ts-node', 'scripts/bench/bench-test.ts']
     networks:
       - app-network
 
   dev-t:
     image: node:22.14.0
-    container_name: dev
+    container_name: nest-app-1
     volumes:
       - .:/app
     working_dir: /app
@@ -44,10 +42,10 @@ services:
       ['npm', 'run', 'start:prod-t']
     networks:
       - app-network
-    depends_on:
-      - mongo
-      - mongo-init
-      - mongo-express
+    # depends_on:
+    #   - mongo
+    #   - mongo-init
+    #   - mongo-express
 
   e2e:
     image: node:22.14.0
@@ -159,13 +157,23 @@ services:
     networks:
       - app-network
 
+  redis:
+    container_name: redis-1
+    hostname: redis-1
+    image: redis:7.4.4
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
   redis-1:
     container_name: redis-cluster
     hostname: redis-cluster
-    image: redis:7.4.2
+    image: redis:7.4.4
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6378:6379"
+      - "6622:22"
     networks:
       - app-network
     healthcheck:
@@ -175,7 +183,7 @@ services:
       retries: 3
 
   redis-2:
-    image: redis:7.4.2
+    image: redis:7.4.4
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6390:6379"
@@ -188,7 +196,7 @@ services:
       retries: 3
 
   redis-3:
-    image: redis:7.4.2
+    image: redis:7.4.4
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6391:6379"
@@ -201,7 +209,7 @@ services:
       retries: 3
 
   redis-4:
-    image: redis:7.4.2
+    image: redis:7.4.4
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6392:6379"
@@ -214,7 +222,7 @@ services:
       retries: 3
 
   redis-5:
-    image: redis:7.4.2
+    image: redis:7.4.4
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6393:6379"
@@ -227,7 +235,7 @@ services:
       retries: 3
   redis-6:
     container_name: redis-6
-    image: redis:7.4.2
+    image: redis:7.4.4
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6394:6379"
@@ -240,7 +248,7 @@ services:
       retries: 3
   redis-7:
     container_name: redis-7
-    image: redis:7.4.2
+    image: redis:7.4.4
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6395:6379"
@@ -253,7 +261,8 @@ services:
       retries: 3
 
   cluster:
-    image: redis:7.4.2
+    image: redis:7.4.4
+    container_name: cluster-init
     command: >
       bash -c "
         sleep 15 &&
@@ -274,7 +283,7 @@ services:
       - app-network
 
   cluster-extend:
-    image: redis:7.4.2
+    image: redis:7.4.4
     command: >
       bash -c "
         sleep 20 &&
@@ -287,7 +296,7 @@ services:
       - app-network
 
   cluster-fix:
-      image: redis:7.4.2
+      image: redis:7.4.4
       volumes:
         - ./scripts:/scripts
       command: ["bash", "/scripts/rm_redis_cluster.sh"]
@@ -296,6 +305,24 @@ services:
       networks:
         - app-network
 
+
+  jump:
+    image: linuxserver/openssh-server:amd64-9.9_p2-r0-ls196
+    container_name: jump
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Shanghai
+      - PASSWORD_ACCESS=true
+      - USER_PASSWORD=jpass
+      - USER_NAME=juser
+    ports:
+      - "2222:2222"
+    volumes:
+      - ./volumes/ssh-server:/config
+    networks:
+      - app-network
+    restart: unless-stopped
 
 networks:
   app-network:
