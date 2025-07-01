@@ -5,11 +5,12 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import {
   ConsulClient,
   ConsulServiceNode,
-} from '@app/microrpc/modules/consul/client';
+} from '@libs/microrpc/modules/consul/client';
 import { HealthModule } from './api/health/health.module';
 import path from 'node:path';
 
-const PROTO_DIR = path.join(process.cwd(), process.env.PROTO_DIR);
+// const PROTO_DIR = path.join(process.cwd(), process.env.PROTO_DIR);
+const PROTO_DIR = path.resolve(process.cwd(), 'libs/microrpc/src/protos');
 const serviceConfig = {
   loadBalancingConfig: [{ round_robin: {} }],
 };

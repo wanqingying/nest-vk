@@ -98,7 +98,7 @@ services:
 
   broker:
     image: rabbitmq:3.9-management-alpine
-    container_name: flip-broker
+    container_name: broker
     ports:
       - '5672:5672'
       - '15672:15672'

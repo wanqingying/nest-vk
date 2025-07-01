@@ -45,6 +45,26 @@ async function main3() {
   await cluster.set('testfoo', 'testbar');
   const clusterResult = await cluster.get('testfoo');
   console.log('redis cluster result:', clusterResult);
+
+  cluster.on('error', (err) => {
+    console.error('Redis cluster error:', err);
+  });
+
+  for (const master of cluster.masters) {
+    const client =
+      master.client instanceof Promise ? await master.client : master.client;
+    client.on('error', (err) => {
+      console.error('Redis master client error:', master.id, err);
+    });
+  }
+
+  for (const master of cluster.masters) {
+    const client =
+      master.client instanceof Promise ? await master.client : master.client;
+    console.log(`set ${master.id} to test moved error catch`);
+    await client.set('key11', 'val11');
+  }
+  console.log('Set done ');
 }
 
 main3().catch(console.error);

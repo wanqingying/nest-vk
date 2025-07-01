@@ -4,8 +4,8 @@ import { NestAiApiModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import path from 'node:path';
 import dotenv from 'dotenv';
-import { getHostIp } from '@app/utils/getHostIp';
-import { getNodeEnv, getServerNodeId } from '@app/utils';
+import { getHostIp } from '@libs/utils/getHostIp';
+import { getNodeEnv, getServerNodeId } from '@libs/utils';
 dotenv.config();
 
 const IP = getHostIp();

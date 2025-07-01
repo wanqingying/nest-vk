@@ -14,7 +14,8 @@ import { UpdateHealthDto } from './dto/update-health.dto';
 import { Inject } from '@nestjs/common';
 import { ClientProxy, ClientGrpc } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { hero } from '@app/microrpc/protos/hero.js';
+import { hero } from '@libs/microrpc/protos/hero.js';
+import axios from 'axios';
 
 const HeroService = hero.HeroesService;
 
@@ -47,6 +48,15 @@ export class HealthController implements OnModuleInit {
   async test() {
     const res = await this.heroService.findOne({ id: 1 });
     return res;
+  }
+
+    @Get('/server-health')
+  async s_health() {
+//     start  |     "host": "172.18.0.5",
+// start  |     "port": 3006
+    
+    const res = await axios.get('http://172.18.0.5:3004/health');
+    return res.data;
   }
 
   @Get(':id')

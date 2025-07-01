@@ -1,9 +1,9 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload, GrpcMethod } from '@nestjs/microservices';
 import { HeroService } from './hero.service';
-import { hero } from '@app/microrpc/protos/hero.js';
+import { hero } from '@libs/microrpc/protos/hero.js';
 import { Metadata, ServerUnaryCall } from '@grpc/grpc-js';
-import { getNodeEnv, getServerNodeId } from '@app/utils';
+import { getNodeEnv, getServerNodeId } from '@libs/utils';
 
 @Controller()
 export class HeroController {

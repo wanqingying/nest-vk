@@ -12,42 +12,61 @@ services:
     # ports:
       # - '8500:8500'
     command:
-      ['./node_modules/.bin/ts-node', 'scripts/redis/node-redis2.ts']
-    networks:
-      - app-network
-    depends_on:
-      - cluster
-
-  dev2:
-    image: node:20.14.0
-    container_name: dev
-    volumes:
-      - .:/app
-    working_dir: /app
-    # ports:
-      # - '8500:8500'
-    command:
-      ['./node_modules/.bin/ts-node', 'scripts/bench/bench-test.ts']
+      ['./node_modules/.bin/ts-node', 'scripts/http2/dns.ts']
     networks:
       - app-network
 
-  dev-t:
+  start:
     image: node:20.14.0
-    container_name: dev
+    container_name: start
     volumes:
       - .:/app
     working_dir: /app
     ports:
-      - '3007:3007'
-      - '9229:9229'
+      - '3005:3005'
     command:
-      ['npm', 'run', 'start:prod-t']
+      ['npm','run', 'start:dev-c']
     networks:
       - app-network
-    depends_on:
-      - mongo
-      - mongo-init
-      - mongo-express
+
+  t-server:
+    image: node:20.14.0
+    hostname: t-server
+    volumes:
+      - .:/app
+    working_dir: /app
+    command:
+       ['node', 'dist/apps/nest-test-app/main.js']
+    networks:
+      - app-network
+    deploy:
+      replicas: 2
+
+  rpc-s-consul:
+    image: node:20.14.0
+    hostname: rpc-s-consul
+    volumes:
+      - .:/app
+    working_dir: /app
+    command:
+       ['node', 'dist/apps/nest-rpc-server/main.js']
+    networks:
+      - app-network
+    deploy:
+      replicas: 2
+
+  rpc-c-consul:
+    image: node:20.14.0
+    hostname: rpc-c-consul
+    volumes:
+      - .:/app
+    working_dir: /app
+    command:
+       ['node', 'dist/apps/nest-rpc-client/main.js']
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
 
   e2e:
     image: node:20.14.0
@@ -64,7 +83,7 @@ services:
 
   consul:
     image: consul:1.15.4
-    container_name: consul
+    hostname: consul
     ports:
       - '8500:8500'
       - '8600:8600/udp'
@@ -158,123 +177,6 @@ services:
       - ./volumes/data/mysql:/var/lib/mysql
     networks:
       - app-network
-
-  redis-1:
-    container_name: redis-cluster
-    hostname: redis-cluster
-    image: redis:latest
-    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    ports:
-      - "6378:6379"
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  redis-2:
-    image: redis:latest
-    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    ports:
-      - "6390:6379"
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  redis-3:
-    image: redis:latest
-    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    ports:
-      - "6391:6379"
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  redis-4:
-    image: redis:latest
-    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    ports:
-      - "6392:6379"
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  redis-5:
-    image: redis:latest
-    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    ports:
-      - "6393:6379"
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-  redis-6:
-    image: redis:latest
-    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    ports:
-      - "6394:6379"
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-  redis-7:
-    image: redis:latest
-    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-    ports:
-      - "6395:6379"
-    networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
-  cluster:
-    image: redis:latest
-    command: >
-      bash -c "
-        sleep 15 &&
-        echo yes | redis-cli --cluster create redis-1:6379 redis-2:6379 redis-3:6379 redis-4:6379  redis-5:6379 redis-6:6379 redis-7:6379 --cluster-replicas 0
-      "
-    depends_on:
-      redis-1:
-        condition: service_healthy
-      redis-2:
-        condition: service_healthy
-      redis-3:
-        condition: service_healthy
-      redis-4:
-        condition: service_healthy
-      redis-5:
-        condition: service_healthy
-      redis-6:
-        condition: service_healthy
-      redis-7:
-        condition: service_healthy
-    networks:
-      - app-network
-
 
 networks:
   app-network:

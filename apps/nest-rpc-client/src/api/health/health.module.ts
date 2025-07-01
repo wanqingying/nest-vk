@@ -7,7 +7,7 @@ import { TwosumModule, TwosumService } from '../../modules/twosum/twosum.module'
 @Module({
   imports: [
     TwosumModule,
-    MathModule.forFeature(TwosumService),
+    // MathModule.forFeature(TwosumService),
   ],
   controllers: [HealthController],
   providers: [HealthService],

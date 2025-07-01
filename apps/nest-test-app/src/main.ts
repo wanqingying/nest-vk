@@ -20,12 +20,12 @@ dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { NestTestAppModule } from './app.module';
 import * as http2 from 'http2';
+import { setupGracefulShutdown } from '@libs/utils';
 
 const port = process.env.port ?? 3007;
 async function bootstrap() {
   // 创建 HTTP/2 服务器（无 TLS）
   const server = http2.createServer();
-  const adapter= 
 
   // 使用自定义 HTTP/2 服务器创建 NestJS 应用
   const app = await NestFactory.create(NestTestAppModule, {
@@ -39,9 +39,14 @@ async function bootstrap() {
     // },
   });
   const adapter = app.getHttpAdapter();
-  
+  app.setGlobalPrefix('api');
 
   await app.listen(port);
+  // app.enableShutdownHooks();
   console.log(`Application is running on: ${await app.getUrl()} with HTTP/2`);
+  setupGracefulShutdown(app, {
+    timeoutMs: 9000,
+    wait: 500,
+  });
 }
 bootstrap();

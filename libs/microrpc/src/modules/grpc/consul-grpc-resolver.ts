@@ -6,7 +6,7 @@ import { debounce } from 'lodash';
 import {
   ConsulClient,
   ConsulServiceNode,
-} from '@app/microrpc/modules/consul/client';
+} from '@libs/microrpc/modules/consul/client';
 
 export interface TcpSubchannelAddress {
   port: number;
@@ -143,7 +143,7 @@ export class ConsulGRPCIPV4Resolver {
     private listener: any,
     channelOptions: any,
   ) {
-    this.updateResolution = debounce(this.updateResolution, 500);
+    this.updateResolution = debounce(this.updateResolution.bind(this), 500);
     // trace('Resolver constructed for target ' + uriToString(target));
     console.log('Resolver constructed for target ' + uriToString(target));
     const addresses: TcpSubchannelAddress[] = [];
@@ -176,10 +176,7 @@ export class ConsulGRPCIPV4Resolver {
         ' address list ' +
         JSON.stringify(this.addresses, null, 2),
     );
-    // setTimeout(() => {
-    //   this.addresses.shift();
-    //   this.updateResolution();
-    // }, 2000);
+
     this.consulClient = ConsulClient.getServiceClient('nest-grpc-server');
     this.initConsulWatch();
   }

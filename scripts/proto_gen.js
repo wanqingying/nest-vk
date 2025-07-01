@@ -3,10 +3,11 @@ const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config();
 
-// const PROTO_PATH = path.resolve(process.cwd(), 'libs/microrpc/src/protos');
-const PROTO_PATH = path.join(process.cwd(), process.env.PROTO_PATH);
-const OUT_DIR =path.join(process.cwd(), process.env.PROTO_PATH,'./types');
+const PROTO_PATH = path.resolve(process.cwd(), 'libs/microrpc/src/protos');
+// const PROTO_PATH = path.join(process.cwd(), process.env.PROTO_PATH);
 console.log('PROTO_PATH:', PROTO_PATH);
+const OUT_DIR =path.join(PROTO_PATH,'./types');
+
 const command = `
   npx grpc_tools_node_protoc \
   --js_out=import_style=commonjs,binary:${OUT_DIR} \
