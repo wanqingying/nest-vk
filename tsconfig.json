@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2024",
     "sourceMap": true,
@@ -19,38 +20,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@nest-rpc-server/*": [
-        "apps/nest-rpc-server/src/*"
-      ],
-      "@nest-rpc-client/*": [
-        "apps/nest-rpc-client/src/*"
-      ],
-      "@libs/microrpc": [
-        "libs/microrpc/src"
-      ],
-      "@libs/microrpc/*": [
-        "libs/microrpc/src/*"
-      ],
-      "@libs/utils": [
-        "libs/utils/src"
-      ],
-      "@libs/utils/*": [
-        "libs/utils/src/*"
-      ],
-      "@libs/db": [
-        "libs/db/src"
-      ],
-      "@libs/db/*": [
-        "libs/db/src/*"
-      ],
-      "@libs/shared": [
-        "libs/shared/src"
-      ],
-      "@libs/shared/*": [
-        "libs/shared/src/*"
-      ]
+      "@libs/*": ["libs/*"],
+      "@apps/*": ["apps/*"],
     },
     "inlineSources": true,
-    "sourceRoot": "/"
+    "sourceRoot": "/",
   }
 }

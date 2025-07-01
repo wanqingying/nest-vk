@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { HealthService } from './health.service';
-import { getNodeEnv ,getServerNodeId} from '@libs/utils';
+import { getNodeEnv ,getServerNodeId} from '@libs/utils/src';
 
 @Controller('health')
 export class HealthController {

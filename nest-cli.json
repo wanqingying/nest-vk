@@ -1,33 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/nest-rpc-client/src",
-  "compilerOptions": {
-    "deleteOutDir": true,
-    "webpack": true,
-    "tsConfigPath": "apps/nest-rpc-client/tsconfig.app.json"
-  },
   "monorepo": true,
-  "root": "apps/nest-rpc-client",
   "projects": {
-    "nest-rpc-client": {
-      "type": "application",
-      "root": "apps/nest-rpc-client",
-      "entryFile": "main",
-      "sourceRoot": "apps/nest-rpc-client/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/nest-rpc-client/tsconfig.app.json"
-      }
-    },
-    "nest-rpc-server": {
-      "type": "application",
-      "root": "apps/nest-rpc-server",
-      "entryFile": "main",
-      "sourceRoot": "apps/nest-rpc-server/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/nest-rpc-server/tsconfig.app.json"
-      }
-    },
     "microrpc": {
       "type": "library",
       "root": "libs/microrpc",

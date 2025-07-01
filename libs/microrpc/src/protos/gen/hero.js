@@ -4,7 +4,7 @@
 var $protobuf = require("protobufjs/minimal");
 
 // Common aliases
-var $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
+var $util = $protobuf.util;
 
 // Exported root namespace
 var $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
@@ -83,6 +83,39 @@ $root.hero = (function() {
          * @variation 2
          */
 
+        /**
+         * Callback as used by {@link hero.HeroesService#updateHero}.
+         * @memberof hero.HeroesService
+         * @typedef UpdateHeroCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {hero.Hero} [response] Hero
+         */
+
+        /**
+         * Calls UpdateHero.
+         * @function updateHero
+         * @memberof hero.HeroesService
+         * @instance
+         * @param {hero.IHero} request Hero message or plain object
+         * @param {hero.HeroesService.UpdateHeroCallback} callback Node-style callback called with the error, if any, and Hero
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(HeroesService.prototype.updateHero = function updateHero(request, callback) {
+            return this.rpcCall(updateHero, $root.hero.Hero, $root.hero.Hero, request, callback);
+        }, "name", { value: "UpdateHero" });
+
+        /**
+         * Calls UpdateHero.
+         * @function updateHero
+         * @memberof hero.HeroesService
+         * @instance
+         * @param {hero.IHero} request Hero message or plain object
+         * @returns {Promise<hero.Hero>} Promise
+         * @variation 2
+         */
+
         return HeroesService;
     })();
 
@@ -128,82 +161,6 @@ $root.hero = (function() {
          */
         HeroById.create = function create(properties) {
             return new HeroById(properties);
-        };
-
-        /**
-         * Encodes the specified HeroById message. Does not implicitly {@link hero.HeroById.verify|verify} messages.
-         * @function encode
-         * @memberof hero.HeroById
-         * @static
-         * @param {hero.IHeroById} message HeroById message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        HeroById.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.id);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified HeroById message, length delimited. Does not implicitly {@link hero.HeroById.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof hero.HeroById
-         * @static
-         * @param {hero.IHeroById} message HeroById message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        HeroById.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a HeroById message from the specified reader or buffer.
-         * @function decode
-         * @memberof hero.HeroById
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {hero.HeroById} HeroById
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        HeroById.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.hero.HeroById();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1: {
-                        message.id = reader.int32();
-                        break;
-                    }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a HeroById message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof hero.HeroById
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {hero.HeroById} HeroById
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        HeroById.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
         };
 
         /**
@@ -340,88 +297,6 @@ $root.hero = (function() {
          */
         Hero.create = function create(properties) {
             return new Hero(properties);
-        };
-
-        /**
-         * Encodes the specified Hero message. Does not implicitly {@link hero.Hero.verify|verify} messages.
-         * @function encode
-         * @memberof hero.Hero
-         * @static
-         * @param {hero.IHero} message Hero message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Hero.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
-            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.id);
-            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
-            return writer;
-        };
-
-        /**
-         * Encodes the specified Hero message, length delimited. Does not implicitly {@link hero.Hero.verify|verify} messages.
-         * @function encodeDelimited
-         * @memberof hero.Hero
-         * @static
-         * @param {hero.IHero} message Hero message or plain object to encode
-         * @param {$protobuf.Writer} [writer] Writer to encode to
-         * @returns {$protobuf.Writer} Writer
-         */
-        Hero.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
-
-        /**
-         * Decodes a Hero message from the specified reader or buffer.
-         * @function decode
-         * @memberof hero.Hero
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @param {number} [length] Message length if known beforehand
-         * @returns {hero.Hero} Hero
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Hero.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.hero.Hero();
-            while (reader.pos < end) {
-                var tag = reader.uint32();
-                switch (tag >>> 3) {
-                case 1: {
-                        message.id = reader.int32();
-                        break;
-                    }
-                case 2: {
-                        message.name = reader.string();
-                        break;
-                    }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
-                }
-            }
-            return message;
-        };
-
-        /**
-         * Decodes a Hero message from the specified reader or buffer, length delimited.
-         * @function decodeDelimited
-         * @memberof hero.Hero
-         * @static
-         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {hero.Hero} Hero
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        Hero.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
         };
 
         /**

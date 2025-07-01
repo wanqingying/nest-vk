@@ -6,7 +6,7 @@ import {
   HealthServiceDetailType,
 } from './consul.type';
 import EventEmitter from 'node:events';
-import { getConsulHost } from '@libs/utils/env';
+import { getConsulHost } from '@libs/utils/src/env';
 export interface ConsulServiceNode {
   id: string;
   service: string;

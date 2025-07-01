@@ -7,11 +7,12 @@ import {
   Param,
   Delete,
   OnModuleInit,
+  Query,
 } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { Inject } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
-import { hero } from '@libs/microrpc/protos/hero.js';
+import { hero } from '@libs/microrpc/src/protos/gen/hero.js';
 import axios from 'axios';
 
 @Controller('health')
@@ -34,10 +35,18 @@ export class HealthController implements OnModuleInit {
     return 'ok-' + process.env.HOSTNAME;
   }
 
-  @Get('/test-rpc')
+  @Get('/rpc-get')
   async test() {
     const res = await this.heroService.findOne({ id: 1 });
     return res;
+  }
+  @Get('/rpc-update')
+  async update(@Query('id') id: number, @Query('name') name: string) {
+    const instance = hero.Hero.create({
+      id,
+      name,
+    });
+    return this.heroService.updateHero(instance);
   }
 
   @Get('/server-health')
@@ -48,7 +57,9 @@ export class HealthController implements OnModuleInit {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.healthService.findOne(+id);
+    return this.heroService.findOne({
+      id: Number(id),
+    });
   }
 
   @Delete(':id')

@@ -36,6 +36,20 @@ export namespace hero {
          * @returns Promise
          */
         public findOne(request: hero.IHeroById): Promise<hero.Hero>;
+
+        /**
+         * Calls UpdateHero.
+         * @param request Hero message or plain object
+         * @param callback Node-style callback called with the error, if any, and Hero
+         */
+        public updateHero(request: hero.IHero, callback: hero.HeroesService.UpdateHeroCallback): void;
+
+        /**
+         * Calls UpdateHero.
+         * @param request Hero message or plain object
+         * @returns Promise
+         */
+        public updateHero(request: hero.IHero): Promise<hero.Hero>;
     }
 
     namespace HeroesService {
@@ -46,6 +60,13 @@ export namespace hero {
          * @param [response] Hero
          */
         type FindOneCallback = (error: (Error|null), response?: hero.Hero) => void;
+
+        /**
+         * Callback as used by {@link hero.HeroesService#updateHero}.
+         * @param error Error, if any
+         * @param [response] Hero
+         */
+        type UpdateHeroCallback = (error: (Error|null), response?: hero.Hero) => void;
     }
 
     /** Properties of a HeroById. */
@@ -73,41 +94,6 @@ export namespace hero {
          * @returns HeroById instance
          */
         public static create(properties?: hero.IHeroById): hero.HeroById;
-
-        /**
-         * Encodes the specified HeroById message. Does not implicitly {@link hero.HeroById.verify|verify} messages.
-         * @param message HeroById message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(message: hero.IHeroById, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Encodes the specified HeroById message, length delimited. Does not implicitly {@link hero.HeroById.verify|verify} messages.
-         * @param message HeroById message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encodeDelimited(message: hero.IHeroById, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Decodes a HeroById message from the specified reader or buffer.
-         * @param reader Reader or buffer to decode from
-         * @param [length] Message length if known beforehand
-         * @returns HeroById
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): hero.HeroById;
-
-        /**
-         * Decodes a HeroById message from the specified reader or buffer, length delimited.
-         * @param reader Reader or buffer to decode from
-         * @returns HeroById
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): hero.HeroById;
 
         /**
          * Verifies a HeroById message.
@@ -176,41 +162,6 @@ export namespace hero {
          * @returns Hero instance
          */
         public static create(properties?: hero.IHero): hero.Hero;
-
-        /**
-         * Encodes the specified Hero message. Does not implicitly {@link hero.Hero.verify|verify} messages.
-         * @param message Hero message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encode(message: hero.IHero, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Encodes the specified Hero message, length delimited. Does not implicitly {@link hero.Hero.verify|verify} messages.
-         * @param message Hero message or plain object to encode
-         * @param [writer] Writer to encode to
-         * @returns Writer
-         */
-        public static encodeDelimited(message: hero.IHero, writer?: $protobuf.Writer): $protobuf.Writer;
-
-        /**
-         * Decodes a Hero message from the specified reader or buffer.
-         * @param reader Reader or buffer to decode from
-         * @param [length] Message length if known beforehand
-         * @returns Hero
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): hero.Hero;
-
-        /**
-         * Decodes a Hero message from the specified reader or buffer, length delimited.
-         * @param reader Reader or buffer to decode from
-         * @returns Hero
-         * @throws {Error} If the payload is not a reader or valid buffer
-         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-         */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): hero.Hero;
 
         /**
          * Verifies a Hero message.
