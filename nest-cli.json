@@ -72,6 +72,42 @@
       "compilerOptions": {
         "tsConfigPath": "libs/shared/tsconfig.lib.json"
       }
+    },
+    "nest-rpc-dns-server": {
+      "type": "application",
+      "root": "apps/nest-rpc-dns-server",
+      "entryFile": "main",
+      "sourceRoot": "apps/nest-rpc-dns-server/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nest-rpc-dns-server/tsconfig.app.json"
+      }
+    },
+    "nest-rpc-dns-client": {
+      "type": "application",
+      "root": "apps/nest-rpc-dns-client",
+      "entryFile": "main",
+      "sourceRoot": "apps/nest-rpc-dns-client/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nest-rpc-dns-client/tsconfig.app.json"
+      }
+    },
+    "nest-rpc-consul-server": {
+      "type": "application",
+      "root": "apps/nest-rpc-consul-server",
+      "entryFile": "main",
+      "sourceRoot": "apps/nest-rpc-consul-server/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nest-rpc-consul-server/tsconfig.app.json"
+      }
+    },
+    "nest-rpc-consul-client": {
+      "type": "application",
+      "root": "apps/nest-rpc-consul-client",
+      "entryFile": "main",
+      "sourceRoot": "apps/nest-rpc-consul-client/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nest-rpc-consul-client/tsconfig.app.json"
+      }
     }
   }
 }

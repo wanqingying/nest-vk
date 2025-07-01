@@ -25,7 +25,7 @@ services:
     ports:
       - '3005:3005'
     command:
-      ['npm','run', 'start:dev-c']
+      ['npm','run', 'start:dev','nest-rpc-dns-client']
     networks:
       - app-network
 
@@ -40,16 +40,16 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 2
+      replicas: 1
 
-  rpc-s-consul:
+  rpc-s-dns:
     image: node:20.14.0
-    hostname: rpc-s-consul
+    hostname: rpc-s-dns
     volumes:
       - .:/app
     working_dir: /app
     command:
-       ['node', 'dist/apps/nest-rpc-server/main.js']
+       ['node', 'dist/apps/nest-rpc-dns-server/main.js']
     networks:
       - app-network
     deploy:
