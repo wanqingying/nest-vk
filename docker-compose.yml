@@ -12,7 +12,7 @@ services:
     # ports:
       # - '8500:8500'
     command:
-      ['./node_modules/.bin/ts-node', 'scripts/http2/dns.ts']
+      ['./node_modules/.bin/ts-node', 'scripts/kafka/dev.ts']
     networks:
       - app-network
 

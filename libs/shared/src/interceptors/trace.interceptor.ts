@@ -6,7 +6,7 @@ import {
   } from '@nestjs/common';
   import { Observable } from 'rxjs';
   import { tap } from 'rxjs/operators';
-  import { trace, tracer } from '@libs/utils/otlp/sdk'; 
+  import { trace, tracer } from '@libs/utils/src/otlp/sdk'; 
   
   @Injectable()
   export class HttpTraceInterceptor implements NestInterceptor {
@@ -14,7 +14,7 @@ import {
 	  const httpContext = context.switchToHttp();
 	  const request = httpContext.getRequest();
 	  const response = httpContext.getResponse();
-  
+
 	  const method = request.method;
 	  const url = request.url;
   

@@ -9,13 +9,7 @@ import {
 // import { AModule, AService } from '../../modules/modulea/a.module';
 // import { BModule, BService } from '../../modules/moduleb/b.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Cat, CatDocument, CatSchema } from '@libs/db/mongo/schemas/cat.schema';
-import {
-  TestCollection,
-  TestDocument,
-  TestSchema,
-} from '@libs/db/mongo/schemas/test.schema';
-
+import { SingleService } from './single.service';
 
 @Module({
   imports: [
@@ -26,7 +20,7 @@ import {
     //   { name: TestCollection.name, schema: TestSchema },
     // ]),
   ],
-  providers: [HealthService],
+  providers: [HealthService, SingleService],
   controllers: [HealthController],
 })
 export class HealthModule {}

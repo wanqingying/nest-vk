@@ -39,8 +39,7 @@ services:
           memory: 1G
 
   redis-1:
-    container_name: redis-cluster
-    hostname: redis-cluster
+    hostname: redis-1
     image: redis:7.4.2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
@@ -55,6 +54,7 @@ services:
 
   redis-2:
     image: redis:7.4.2
+    hostname: redis-2
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - '6390:6379'
@@ -68,6 +68,7 @@ services:
 
   redis-3:
     image: redis:7.4.2
+    hostname: redis-3
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - '6391:6379'
@@ -99,6 +100,7 @@ services:
   broker:
     image: rabbitmq:3.9-management-alpine
     container_name: broker
+    hostname: broker
     ports:
       - '5672:5672'
       - '15672:15672'
@@ -112,7 +114,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G
+          memory: 1G
 
 networks:
   app-network:

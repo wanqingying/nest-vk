@@ -5,7 +5,7 @@ import {
   RedisClusterLegacyService,
 } from './cluster-client-legacy.service';
 import { RedisClusterService, ClusterConfig } from './cluster-client.service';
-import { NestLogger } from '@libs/utils';
+import { NestLogger } from '@libs/utils/src';
 
 export interface ClusterManyConfig {
   name: InjectionToken;

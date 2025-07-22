@@ -20,7 +20,7 @@ dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { NestTestAppModule } from './app.module';
 import * as http2 from 'http2';
-import { setupGracefulShutdown } from '@libs/utils';
+import { setupGracefulShutdown } from '@libs/utils/src';
 
 const port = process.env.port ?? 3007;
 async function bootstrap() {

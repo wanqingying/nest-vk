@@ -1,11 +1,10 @@
 version: '3.8'
 
-
 # mongodb replica setup
 services:
   mongo:
     image: mongo:6
-    container_name: mongo2
+    hostname: mongo2
     ports:
       - '27017:27017'
     environment:
@@ -23,7 +22,7 @@ services:
         'rs0',
         '--bind_ip_all',
         '--keyFile',
-        '/etc/mongo-keyfile',
+        '/etc/mongo-keyfile'
       ]
     networks:
       - app-network

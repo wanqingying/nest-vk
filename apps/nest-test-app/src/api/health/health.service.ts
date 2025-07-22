@@ -5,8 +5,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { MathService } from '../../modules/math/math.service';
-import { BModule, BService } from '../../modules/moduleb/b.module';
-import { NestLogger } from '@libs/utils';
+import { NestLogger } from '@libs/utils/src';
 @Injectable()
 export class HealthService implements OnApplicationShutdown, OnModuleDestroy {
   constructor(private readonly service: MathService) {

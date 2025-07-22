@@ -12,7 +12,7 @@ import {
   RedisClusterType,
   RedisClusterOptions,
 } from 'redis';
-import { NestLogger } from '@libs/utils';
+import { NestLogger } from '@libs/utils/src';
 
 import {
   HashTagProvider,

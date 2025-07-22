@@ -1,0 +1,364 @@
+syntax = "proto3";
+
+
+message UserCacheResidenceAddressValiationErrorV2 {
+  optional string code = 1;
+  optional string message = 2;
+  optional string property = 3;
+}
+
+message UserCacheResidence {
+  optional string id = 1;
+  optional string createdAt = 2;
+  optional string updatedAt = 3;
+  optional string userId = 4;
+  optional string name = 5;
+  optional string surname = 6;
+  optional string country = 7;
+  optional string postalCode = 8;
+  optional string state = 9;
+  optional string city = 10;
+  optional string streetLine = 11;
+  optional string apt = 12;
+  optional string instruction = 13;
+  optional string confirmationStatus = 14;
+  repeated UserCacheResidenceAddressValiationErrorV2 validationErrors = 15;
+  repeated string scope = 16;
+  optional string uniquenessKey = 17;
+}
+
+message UserBaseProperties {
+  string userId = 1;
+  optional string gender = 2; 
+  optional int32 age = 3;
+}
+
+message UserCacheSocial {
+  repeated string followersIds = 1;
+  repeated string followingIds = 2;
+  optional string inviterId = 3;
+  repeated UserBaseProperties followingUsers = 4;
+  repeated UserBaseProperties followersUsers = 5;
+}
+
+message UserCachePropertiesSignUpSourceDetails {
+  optional string inviteLink = 1;
+  optional string inviteLinkType = 2;
+  optional string inviterId = 3;
+}
+
+message UserCachePropertiesSignUpSource {
+  optional string type = 1;
+  optional UserCachePropertiesSignUpSourceDetails details = 2;
+}
+
+message UserCachePropertes {
+  optional string id = 1;
+  optional string dateOfBirth = 2;
+  optional string gender = 3;
+  optional string genderIdentity = 4;
+  repeated string feedPreferenceCategories = 5;
+  repeated string brandsFollowed = 6;
+  optional string lastOrderDate = 7;
+  optional string createdAt = 8;
+  optional string lang = 9;
+  optional bool phoneVerified = 10;
+  optional bool emailVerified = 11;
+  optional bool accountVerified = 12;
+  optional string provider = 13;
+  optional bool cardProvided = 14;
+  optional UserCachePropertiesSignUpSource signUpSource = 15;
+  optional string inferredGender = 16;
+}
+
+message UserCacheLastUserPost {
+  optional string id = 1;
+  optional string postType = 2;
+  optional string postCreationTime = 3;
+  optional string productId = 4;
+  optional string productItemId = 5;
+  optional string categoryL1Id = 6;
+}
+
+message UserCacheCurrentFlipCashBalance {
+  optional double activityRewardCredits = 1;
+  optional double cashCredits = 2;
+  optional double inviteRewardCredits = 3;
+  optional double totalAvailableRewardCredits = 4;
+}
+
+message UserCacheUserDevice {
+  optional string fingerprint = 1;
+  optional string osLanguage = 2;
+  optional string deviceId = 3;
+  optional string updatedAt  = 4;
+}
+
+message UserCache {
+  string userId = 1;
+  repeated UserCacheResidence residences = 2;
+  optional UserCacheSocial social = 3;
+  optional UserCachePropertes properties = 4;
+  repeated UserCacheLastUserPost lastUserPosts = 5;
+  optional int32 userPostCreationCount = 6;
+  optional UserCacheCurrentFlipCashBalance currentUserFlipCashBalance = 7;
+  repeated UserCacheUserDevice devices = 8;
+  optional string latestDeviceOsLanguage = 9;
+}
+
+message UserMetricProductItemValueObject {
+  optional string itemId = 1;
+  optional string brandId = 2;
+  optional string categoryId = 3;
+  optional string subCategoryId = 4;
+  repeated string subCategoryId2 = 5;
+  optional string subCategoryId3 = 6;
+  optional string eventTime = 7;
+  optional double price = 8;
+  optional double discountPrice = 9;
+  optional string baseProductId = 10;
+  optional string productId = 11;
+}
+
+message UserMetricProductItemOrderedValueObject {
+  optional string itemId = 1;
+  optional string brandId = 2;
+  optional string categoryId = 3;
+  optional string subCategoryId = 4;
+  repeated string subCategoryId2 = 5;
+  optional string subCategoryId3 = 6;
+  optional string eventTime = 7;
+  optional string deliveredToUserId = 8;
+  optional string payerId = 9;
+  optional double price = 10;
+  optional double discountPrice = 11;
+  optional string baseProductId = 12;
+  optional string productId = 13;
+}
+
+message UserMetricPostValueObject {
+  optional string itemId = 1;
+  optional string brandId = 2;
+  optional string categoryId = 3;
+  optional string subCategoryId = 4;
+  repeated string subCategoryId2 = 5;
+  optional string subCategoryId3 = 6;
+  optional string eventTime = 7;
+  optional string postId = 8;
+  optional string creatorId = 9;
+  optional string postType = 10;
+  optional string baseProductId = 11;
+  optional string productId = 12;
+}
+
+ message UserMetricSearchQueryValueObject {
+  optional string query = 1;
+  optional string searchEntityType = 2;
+  optional int32 resultsCount = 3;
+  optional string eventTime = 4;  
+}
+
+message LastAddedToCartProductItemsWrapper {
+  repeated UserMetricProductItemValueObject values = 1;
+}
+
+message LastProductPageViewedProductItemsWrapper {
+  repeated UserMetricProductItemValueObject values = 1;
+}
+
+message LastDesiredProductItemsWrapper {
+  repeated UserMetricProductItemValueObject values = 1;
+}
+
+message LastOrderedProductItemsWrapper {
+  repeated UserMetricProductItemOrderedValueObject values = 1;
+}
+
+message LastFullViewedPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastCommentedPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastSmartFullViewedPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastBelow2sViewedPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastAddedToCartFromPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastVotedUpPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastVotedUpDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastSharedPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastVotedDownPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastVotedDownDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastSavedPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastSavedDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastBelow2sViewedDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastFullViewedDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastSmartFullViewedDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastCommentedDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastSearchQueriesWrapper {
+  repeated UserMetricSearchQueryValueObject values = 1;
+}
+
+message LastSharedDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastOpenedCommentsDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastViewedRootDebatesPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message LastOpenedCommentsPostsWrapper {
+  repeated UserMetricPostValueObject values = 1;
+}
+
+message UserMetrics {
+  string userId = 1;
+  
+  oneof _lastAddedToCartProductItems {
+    LastAddedToCartProductItemsWrapper lastAddedToCartProductItems = 2;
+  }
+
+  oneof _lastProductPageViewedProductItems {
+    LastProductPageViewedProductItemsWrapper lastProductPageViewedProductItems = 3;
+  }
+
+  oneof _lastDesiredProductItems {
+    LastDesiredProductItemsWrapper lastDesiredProductItems = 4;
+  }
+
+  oneof _lastOrderedProductItems {
+    LastOrderedProductItemsWrapper lastOrderedProductItems = 5;
+  }
+
+  oneof _lastFullViewedPosts {
+    LastFullViewedPostsWrapper lastFullViewedPosts = 6;
+  }
+
+  oneof _lastCommentedPosts {
+    LastCommentedPostsWrapper lastCommentedPosts = 7;
+  }
+
+  oneof _lastSmartFullViewedPosts {
+    LastSmartFullViewedPostsWrapper lastSmartFullViewedPosts = 8;
+  }
+
+  oneof _lastBelow2sViewedPosts {
+    LastBelow2sViewedPostsWrapper lastBelow2sViewedPosts = 9;
+  }
+
+  oneof _lastAddedToCartFromPosts {
+    LastAddedToCartFromPostsWrapper lastAddedToCartFromPosts = 10;
+  }
+
+  oneof _lastVotedUpPosts {
+    LastVotedUpPostsWrapper lastVotedUpPosts = 11;
+  }
+
+  oneof _lastSharedPosts {
+    LastSharedPostsWrapper lastSharedPosts = 12;
+  }
+
+  oneof _lastSearchQueries {
+    LastSearchQueriesWrapper lastSearchQueries = 13;
+  }
+
+  oneof _lastVotedDownPosts {
+    LastVotedDownPostsWrapper lastVotedDownPosts = 14;
+  }
+
+  oneof _lastSavedPosts {
+    LastSavedPostsWrapper lastSavedPosts = 15;
+  }
+
+  oneof _lastBelow2sViewedDebatesPosts {
+    LastBelow2sViewedDebatesPostsWrapper lastBelow2sViewedDebatesPosts = 16;
+  }
+
+  oneof _lastFullViewedDebatesPosts {
+    LastFullViewedDebatesPostsWrapper lastFullViewedDebatesPosts = 17;
+  }
+
+  oneof _lastSmartFullViewedDebatesPosts {
+    LastSmartFullViewedDebatesPostsWrapper lastSmartFullViewedDebatesPosts = 18;
+  }
+
+
+  oneof _lastCommentedDebatesPosts {
+    LastCommentedDebatesPostsWrapper lastCommentedDebatesPosts = 19;
+  }
+
+  oneof _lastSavedDebatesPosts {
+    LastSavedDebatesPostsWrapper lastSavedDebatesPosts = 20;
+  }
+
+  oneof _lastVotedUpDebatesPosts {
+    LastVotedUpDebatesPostsWrapper lastVotedUpDebatesPosts = 21;
+  }
+
+  oneof _lastVotedDownDebatesPosts {
+    LastVotedDownDebatesPostsWrapper lastVotedDownDebatesPosts = 22;
+  }
+
+  oneof _lastSharedDebatesPosts {
+    LastSharedDebatesPostsWrapper lastSharedDebatesPosts = 23;
+  }
+  
+  oneof _lastOpenedCommentsDebatesPosts {
+    LastOpenedCommentsDebatesPostsWrapper lastOpenedCommentsDebatesPosts = 24;
+  }
+
+  oneof _lastViewedRootDebatesPosts {
+    LastViewedRootDebatesPostsWrapper lastViewedRootDebatesPosts = 25;
+  }
+    
+  oneof _lastOpenedCommentsPosts {
+    LastOpenedCommentsPostsWrapper lastOpenedCommentsPosts = 26;
+  }
+}

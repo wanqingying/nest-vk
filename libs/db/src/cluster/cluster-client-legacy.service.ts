@@ -1,4 +1,4 @@
-import { NestLogger } from '@libs/utils';
+import { NestLogger } from '@libs/utils/src';
 import { OnModuleInit, Injectable } from '@nestjs/common';
 import calculateSlot from 'cluster-key-slot';
 import * as assert from 'node:assert';
