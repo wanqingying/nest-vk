@@ -4,7 +4,7 @@ services:
   redis-1:
     container_name: redis-cluster-1
     hostname: redis-cluster-1
-    image: redis:7.4.2
+    image: redis:7.4.5
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 6380
     network_mode: host
     healthcheck:
@@ -16,7 +16,7 @@ services:
   redis-2:
     container_name: redis-cluster-2
     hostname: redis-cluster-2
-    image: redis:7.4.2
+    image: redis:7.4.5
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 6381
     network_mode: host
     healthcheck:
@@ -28,7 +28,7 @@ services:
   redis-3:
     container_name: redis-cluster-3
     hostname: redis-cluster-3
-    image: redis:7.4.2
+    image: redis:7.4.5
     command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --port 6382
     network_mode: host
     healthcheck:
@@ -38,7 +38,7 @@ services:
       retries: 3
 
   redis-cluster-init:
-    image: redis:7.4.2
+    image: redis:7.4.5
     network_mode: host
     command: >
       bash -c "

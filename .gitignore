@@ -62,3 +62,5 @@ zdev_local/*
 .vscode
 volumes
 scripts/*.csv
+infra/mysql-data
+infra/vm/data

@@ -83,6 +83,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/nest-rpc-consul-client/tsconfig.app.json"
       }
+    },
+    "nest-bull-ui": {
+      "type": "application",
+      "root": "apps/nest-bull-ui",
+      "entryFile": "main",
+      "sourceRoot": "apps/nest-bull-ui/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/nest-bull-ui/tsconfig.app.json"
+      }
     }
   }
 }

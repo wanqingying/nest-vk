@@ -20,10 +20,14 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@libs/*": ["libs/*"],
-      "@apps/*": ["apps/*"],
+      "@libs/*": [
+        "libs/*"
+      ],
+      "@apps/*": [
+        "apps/*"
+      ]
     },
     "inlineSources": true,
-    "sourceRoot": "/",
+    "sourceRoot": "/"
   }
 }
