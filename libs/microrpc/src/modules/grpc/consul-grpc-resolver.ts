@@ -6,7 +6,7 @@ import { debounce } from 'lodash';
 import {
   ConsulClient,
   ConsulServiceNode,
-} from '@libs/microrpc/modules/consul/client';
+} from '@libs/microrpc/src/modules/consul/client';
 
 export interface TcpSubchannelAddress {
   port: number;

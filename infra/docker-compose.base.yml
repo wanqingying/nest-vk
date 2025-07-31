@@ -27,7 +27,7 @@ services:
       - app-network
 
   redis:
-    image: redis:7.4.5
+    image: redis:7.4.2
     container_name: redis-dev
     hostname: redis-dev
     ports:

@@ -24,6 +24,7 @@ import { RedisClusterService } from '@libs/db/src';
 import { NestLogger } from '@libs/utils/src';
 import { SingleClsTest } from './single.cls';
 import { ModuleRef } from '@nestjs/core';
+import { TestV1Pipe, TestV2Pipe } from '../../pipes/test.pipe';
 
 const gid = (): string => Math.random().toString(36).substring(3);
 
@@ -46,50 +47,8 @@ export class HealthController {
 
     return Math.random().toString(36);
   }
-  @Get('v2')
+  @Get('pip')
   test2() {
     return 'ok';
   }
-  // @Get('test')
-  // async testv2() {
-  //   const largeIds = new Array(500).fill(1).map((_, i) => {
-  //     return 'g-' + i + gid();
-  //   });
-  //   const newOne = await this.testModel.create({
-  //     name: 'Sammy',
-  //     age: 22,
-  //     resourceId: largeIds[2],
-  //     tags: ['cute', 'fluffy'],
-  //   });
-
-  //   await newOne.save();
-  //   const t1 = Date.now();
-  //   const res = await this.testModel.find({
-  //     resourceId: { $in: largeIds },
-  //   });
-  //   const t2 = Date.now();
-  //   console.log('find cost ', t2 - t1);
-
-  //   return  res;
-  // }
-  // @Get('cats')
-  // async getCats() {
-  //   const newOne = new this.catModel({
-  //     name: 'Sammy',
-  //     age: 22,
-  //     breed: 'Persian',
-  //     tags: ['cute', 'fluffy'],
-  //   });
-  //   await newOne.save();
-
-  //   await this.catModel.create({
-  //     name: 'Tommy',
-  //     age: 2,
-  //     breed: 'Persian',
-  //     tags: ['cute', 'fluffy'],
-  //   });
-  //   const b = await this.catModel.find().limit(3).exec();
-  //   console.log(b);
-  //   return b;
-  // }
 }

@@ -22,6 +22,7 @@
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org qingying --project node-nestjs ./dist/apps/nest-ai-api && sentry-cli sourcemaps upload --org qingying --project node-nestjs ./dist"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.856.0",
     "@bull-board/api": "^6.11.1",
     "@bull-board/express": "^6.11.1",
     "@bull-board/nestjs": "^6.11.1",
@@ -67,6 +68,7 @@
     "mongodb": "6.15",
     "mongoose": "^8.13.0",
     "pg": "^8.14.1",
+    "piscina": "^5.0.0",
     "redis": "^4.7.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"

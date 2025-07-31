@@ -16,10 +16,10 @@ import { ExpressAdapter } from '@bull-board/express';
     HealthModule,
     BullModule.forRoot({
       connection: {
-        // url: 'redis://localhost:6379',
+        url: 'redis://localhost:6379',
         // other options
-        host: 'redis-dev',
-        port: 6379,
+        // host: 'redis-dev',
+        // port: 6379,
       },
       prefix: 'bull',
       settings: {},

@@ -14,20 +14,18 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
+    "strict": false,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@libs/*": [
-        "libs/*"
-      ],
-      "@apps/*": [
-        "apps/*"
-      ]
+      "@libs/*": ["libs/*"],
+      "@apps/*": ["apps/*"]
     },
     "inlineSources": true,
     "sourceRoot": "/"
-  }
+  },
+  "exclude": ["node_modules", "dist"]
 }
