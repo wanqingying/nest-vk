@@ -1,53 +1,6 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
-const predict_1 = require('./lgbm_predictor'); // 假设你有一个lgbm_regression_model.js文件导出predict函数
-const predict_2 = require('./lgbm_regression_predictor');
-
-/**
- * 
-app-1  |   offer_id: 0,
-app-1  |   is_preference_beauty: 0,
-app-1  |   is_preference_gadgets: 0,
-app-1  |   is_preference_grocery: 0,
-app-1  |   is_preference_home: 0,
-app-1  |   is_preference_household: 0,
-app-1  |   is_preference_kids: 0,
-app-1  |   is_preference_kitchen: 0,
-app-1  |   is_preference_men_fashion: 0,
-app-1  |   is_preference_personal_care: 0,
-app-1  |   is_preference_pets: 0,
-app-1  |   is_preference_sports: 0,
-app-1  |   is_preference_women_fashion: 0,
-app-1  |   user_active_days: 0,
-app-1  |   user_age: 0,
-app-1  |   user_gender: 3,
-app-1  |   user_state: 0,
-app-1  |   is_ios: 0,
-app-1  |   super_offer_title: 0
- * 
- */
-
-const example_zero = {
-  offer_id: 0,
-  is_preference_beauty: 0,
-  is_preference_gadgets: 0,
-  is_preference_grocery: 0,
-  is_preference_home: 0,
-  is_preference_household: 0,
-  is_preference_kids: 0,
-  is_preference_kitchen: 0,
-  is_preference_men_fashion: 0,
-  is_preference_personal_care: 0,
-  is_preference_pets: 0,
-  is_preference_sports: 0,
-  is_preference_women_fashion: 0,
-  user_active_days: 0,
-  user_age: 0,
-  user_gender: 3,
-  user_state: 0,
-  is_ios: 0,
-  super_offer_title: 0,
-};
+const { predict } = require('./lgbm_regression_predictor_v2.js');
 
 /**
  * 测试生成的LightGBM预测函数
@@ -163,8 +116,4 @@ function crc32(input) {
 }
 
 // 运行测试
-// testPredictor().catch(console.error);
-const z1 = predict_1(example_zero);
-const z2 = predict_2(example_zero);
-console.log('predict_1:', z1);
-console.log('predict_2:', z2);
+testPredictor().catch(console.error);

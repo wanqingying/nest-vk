@@ -1,15 +1,14 @@
-import {
-  S3Client,
-  GetObjectCommand,
-  ListObjectsV2Request,
-  ListObjectsV2Command,
-} from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, ListObjectsV2Request, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { resolve } from 'path';
+import fs from 'node:fs';
 import { Readable } from 'node:stream';
 // [140023372019_qingying.wan_ml]
-const aws_access_key_id =  process.env.AWS_ACCESS_KEY_ID;
-const aws_secret_access_key = process.env.AWS_SECRET_ACCESS_KEY;
-const aws_session_token = process.env.AWS_SESSION_TOKEN;
+const aws_access_key_id = process.env.aws_access_key_id;
+const aws_secret_access_key = process.env.aws_secret_access_key;
+const aws_session_token = process.env.aws_session_token;
+console.log('aws_access_key_id:', aws_access_key_id);
+console.log('aws_secret_access_key:', aws_secret_access_key);
+console.log('aws_session_token:', aws_session_token);
 // 创建 S3 客户端
 const s3Client = new S3Client({
   region: 'us-west-2', // 替换为您的 AWS 区域
@@ -40,13 +39,26 @@ async function getS3FileFromUrl(url: string): Promise<string> {
   const bucketName = urlParts[0];
   const fileName = urlParts.slice(1).join('/');
 
-  const stream = await getS3FileContent(bucketName, fileName);
+  const stream = await getS3FileContent(String(bucketName), String(fileName));
   if (!stream) {
     throw new Error('文件内容为空');
   }
 
   // 将流转换为字符串
   return streamToString(stream);
+}
+
+async function getS3StreamFromUrl(url: string): Promise<Readable> {
+  const urlParts = url.replace('s3://', '').split('/');
+  const bucketName = urlParts[0];
+  const fileName = urlParts.slice(1).join('/');
+
+  const stream = await getS3FileContent(String(bucketName), String(fileName));
+  if (!stream) {
+    throw new Error('文件内容为空');
+  }
+
+  return stream;
 }
 
 const folder = 's3://flip-ml-test/game-cash-ranking/';
@@ -67,14 +79,20 @@ async function downloadFolderFromS3(folder: string) {
     if (item.Key) {
       const key = item.Key;
       if (key.endsWith('.js')) {
-        const fileContent = await getS3FileFromUrl(`s3://${bucketName}/${key}`);
-        const localFilePath = resolve(__dirname, key);
-        // 确保目录存在
-        const fs = require('fs');
-        fs.mkdirSync(resolve(__dirname, prefix), { recursive: true });
-        // 写入文件
-        fs.writeFileSync(localFilePath, fileContent);
-        console.log(`下载成功: ${localFilePath}`);
+        // const fileContent = await getS3FileFromUrl(`s3://${bucketName}/${key}`);
+        // const localFilePath = resolve(__dirname, key);
+        // // 确保目录存在
+        // const fs = require('fs');
+        // fs.mkdirSync(resolve(__dirname, prefix), { recursive: true });
+        // // 写入文件
+        // fs.writeFileSync(localFilePath, fileContent);
+        // console.log(`下载成功: ${localFilePath}`);
+        const stream = await getS3StreamFromUrl(`s3://${bucketName}/${key}`);
+        const stat = fs.statSync(resolve(__dirname, prefix));
+        if (!stat.isDirectory()) {
+          fs.mkdirSync(resolve(__dirname, prefix), { recursive: true });
+        }
+        await pipeStreamToLocalFile(stream, resolve(__dirname, key));
       }
     }
   }
@@ -84,9 +102,18 @@ async function downloadFolderFromS3(folder: string) {
 function streamToString(stream: Readable): Promise<string> {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('data', chunk => chunks.push(chunk));
     stream.on('error', reject);
     stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')));
+  });
+}
+
+function pipeStreamToLocalFile(stream: Readable, file: string): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    const fileStream = fs.createWriteStream(file);
+    stream.pipe(fileStream);
+    fileStream.on('finish', () => resolve(true));
+    fileStream.on('error', (error: Error) => reject(error));
   });
 }
 

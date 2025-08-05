@@ -1,0 +1,58 @@
+const featureV2 = {
+  super_offer_title: 'Solitaire Tile',
+  offer_id: 1666347,
+  is_ios: 1,
+  user_active_days: 3,
+  user_gender: 0,
+  user_age: 30,
+  user_state: 'California',
+  is_preference_beauty: 1,
+  is_preference_women_fashion: 1,
+  is_preference_kitchen: 0,
+  is_preference_men_fashion: 0,
+  is_preference_gadgets: 0,
+  is_preference_home: 0,
+  is_preference_personal_care: 0,
+  is_preference_kids: 0,
+  is_preference_sports: 1,
+  is_preference_pets: 0,
+  is_preference_household: 0,
+  is_preference_grocery: 0,
+};
+const featureV1 = {
+  super_offer_title: 'Solitaire Tile',
+  offer_id: 1666347,
+  is_ios: 1,
+  user_active_days: 3,
+  user_gender: 0,
+  user_age: 30,
+  user_state: 'California',
+  is_preference_beauty: 1,
+  is_preference_women_fashion: 1,
+  is_preference_kitchen: 0,
+  is_preference_men_fashion: 0,
+  is_preference_gadgets: 0,
+  is_preference_home: 0,
+  is_preference_personal_care: 0,
+  is_preference_kids: 0,
+  is_preference_sports: 1,
+  is_preference_pets: 0,
+  is_preference_household: 0,
+  is_preference_grocery: 0,
+};
+
+const sig_config = {
+  models: [
+    {
+      name: 'pred_install_rate_v1',
+      s3_model_file: 's3://flip-ml-test/lgbm_regression_predictor.js',
+      feature_group_name: 'predict_features_v1',
+    },
+    {
+      name: 'pred_income_v1',
+      s3_model_file: 's3://flip-ml-test/lgbm_regression_predictor.js',
+      feature_group_name: 'predict_features_v1',
+    },
+  ],
+  score_expression: 'pred_install_rate_v1 * 2 + pred_income_v1 * 0.5',
+};

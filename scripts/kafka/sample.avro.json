@@ -1,0 +1,131 @@
+{
+  "type": "record",
+  "name": "P13nSample",
+  "namespace": "flip_personalization_recommendations_recorder",
+  "fields": [
+    {
+      "name": "user_id",
+      "type": "string"
+    },
+    {
+      "name": "user_info",
+      "type": {
+        "type": "record",
+        "name": "UserInfo",
+        "fields": [
+          {
+            "name": "user_id",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "retriever_name",
+      "type": "string"
+    },
+    {
+      "name": "retriever_info",
+      "type": {
+        "type": "record",
+        "name": "RetrieverInfo",
+        "fields": [
+          {
+            "name": "retriever_name",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "post_info",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "PostInfo",
+          "fields": [
+            {
+              "name": "post_id",
+              "type": "string"
+            },
+            {
+              "name": "rn_in_retriever",
+              "type": "int"
+            },
+            {
+              "name": "rn_in_ranking",
+              "type": "int"
+            },
+            {
+              "name": "rn_in_re_ranking",
+              "type": "int"
+            },
+            {
+              "name": "rn_in_merge",
+              "type": ["int", "null"],
+              "default": -1
+            },
+            {
+              "name": "rn_in_final",
+              "type": ["int", "null"],
+              "default": -1
+            },
+            {
+              "name": "is_pass_filter",
+              "type": "int"
+            },
+            {
+              "name": "is_pass_merge",
+              "type": "int"
+            },
+            {
+              "name": "is_pass_rank",
+              "type": "int"
+            },
+            {
+              "name": "is_pass_re_rank",
+              "type": "int"
+            },
+            {
+              "name": "is_final",
+              "type": "int"
+            },
+            {
+              "name": "ranking_score",
+              "type": "float"
+            },
+            {
+              "name": "retriever_score",
+              "type": ["null", "float"],
+              "default": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "trace_id",
+      "type": "string"
+    },
+    {
+      "name": "dt",
+      "type": "string"
+    },
+    {
+      "name": "feed_id",
+      "type": ["string", "null"],
+      "default": ""
+    },
+    {
+      "name": "event_user_id",
+      "type": ["null", "string"],
+      "default": null
+    },
+    {
+      "name": "event_timestamp",
+      "type": "long",
+      "default": 0
+    }
+  ]
+}

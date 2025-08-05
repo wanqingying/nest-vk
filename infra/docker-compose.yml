@@ -1,81 +1,123 @@
-# version: "3.8"
+version: '3.6'
 
 services:
-  # ...existing services...
-
-  dev:
-    image: node:20.14.0
-    container_name: dev
-    volumes:
-      - .:/app
-    working_dir: /app
-    # ports:
-      # - '8500:8500'
-    command:
-      ['./node_modules/.bin/ts-node', 'scripts/mongo/dev.ts']
+  localstack:
+    image: localstack/localstack:2.3.2
+    hostname: localstack-p-viewer
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/var/lib/localstack/data
+      - OPEN_SEARCH_CLIENT_MANAGED_CLUSTER_REGION=us-west-2
+      - DEFAULT_REGION=us-west-2
+      - S3_BUCKET=local-image-processor-bucket,non-default-image-processor-bucket
     networks:
       - app-network
 
-  dev2:
-    image: node:20.14.0
-    container_name: dev
+  localstack-setup:
+    image: localstack/localstack:2.3.2
+    env_file: ./env.example
+    depends_on:
+      - localstack
+    restart: 'no'
+    entrypoint: sh -c /configure-localstack.sh
     volumes:
-      - .:/app
-    working_dir: /app
-    # ports:
-      # - '8500:8500'
-    command:
-      ['./node_modules/.bin/ts-node', 'scripts/kafka/scg.ts']
+      - './tools/configure-localstack.sh:/configure-localstack.sh'
     networks:
       - app-network
 
-  dev-t:
-    image: node:20.14.0
-    container_name: dev
-    volumes:
-      - .:/app
-    working_dir: /app
+  redis:
+    image: redis:7.4.2
+    container_name: redis-dev
+    hostname: redis-dev
     ports:
-      - '3007:3007'
-    command:
-      ['npm', 'run', 'start:dev-t']
+      - '6379:6379'
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
-  e2e:
-    image: node:20.14.0
-    container_name: e2e
-    volumes:
-      - .:/app
-    working_dir: /app
-    # ports:
-      # - '3007:3007'
-    command:
-      ['npm', 'run', 'test:e2e']
-    networks:
-      - app-network
-
-  consul:
-    image: consul:1.15.4
-    container_name: consul
+  redis-1:
+    hostname: redis-1
+    image: redis:7.4.2
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
-      - '8500:8500'
-      - '8600:8600/udp'
-    command:
-      ['agent', '-server', '-bootstrap-expect=1', '-ui', '-client=0.0.0.0']
+      - '6378:6379'
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-2:
+    image: redis:7.4.2
+    hostname: redis-2
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - '6390:6379'
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-3:
+    image: redis:7.4.2
+    hostname: redis-3
+    command: redis-server --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - '6391:6379'
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-cluster-init:
+    image: redis:7.4.2
+    command: >
+      bash -c "
+        sleep 15 &&
+        echo yes | redis-cli --cluster create redis-1:6379 redis-2:6379 redis-3:6379 --cluster-replicas 0
+      "
+    depends_on:
+      redis-1:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
     networks:
       - app-network
 
-  rsc:
-    image: node:20.14.0
-    container_name: run-script
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: ['node', 'scripts/redis/node-redis.js']
+  broker:
+    image: rabbitmq:3.9-management-alpine
+    container_name: broker
+    hostname: broker
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=bJfjG49cm0oS1aZKuK3z
+      - RABBITMQ_DEFAULT_VHOST=/
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
 networks:
   app-network:
+    name: app-network
     driver: bridge
