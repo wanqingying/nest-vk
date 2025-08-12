@@ -1,0 +1,70 @@
+{
+  "type": "record",
+  "name": "UserTestEvent",
+  "namespace": "flip.p13n",
+  "fields": [
+    {
+      "name": "userId",
+      "type": "string"
+    },
+    {
+      "name": "timestamp",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "metadata",
+      "type": [
+        "null",
+        {
+          "type": "record",
+          "name": "EventMetadata",
+          "namespace": "com.flip.personalization",
+          "fields": [
+            {
+              "name": "source",
+              "type": "string"
+            },
+            {
+              "name": "campaign",
+              "type": ["null", "string"],
+              "default": null
+            }
+          ]
+        }
+      ],
+      "default": null
+    },
+    {
+      "name": "tags",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "eventTags",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "EventTag",
+          "namespace": "com.flip.personalization",
+          "fields": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "value",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "doc": "Test event for user interactions"
+}

@@ -1,0 +1,504 @@
+{
+  "rank_model_s3_link": "s3://flip-ml-test/game-cash-ranking/",
+  "max-rank-threads": 2,
+  "rank_all_user_enabled": true,
+  "rank_user_enabled": true,
+  "rank-workers-enabled": true,
+  "rank-max-workers": 2,
+  "rank_log_top_k": 3,
+  "rank_sync_s3_enabled": false,
+  "rank-feature-groups": {
+    "ranking-features-group-v2": [
+      {
+        "resourceType": "gamecash_game_fea",
+        "namespace": "post",
+        "features": {
+          "is_game": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_sensitive": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_ios": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "game_title": {
+            "defaultValue": "",
+            "valueType": "crc32"
+          },
+          "total_points": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "total_promotional_points": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "millstone_cnt": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "payout_1": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "payout_2": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "payout_3": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_cpi_game": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_cpi": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_cpe": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_cpa": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_downloads": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_lead_gen": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_credit_required": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_videos": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_free": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "us_app_rank": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "first_step_name__install": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "first_step_name__open": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "first_step_name__play": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "first_step_name__reg": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_game": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_card": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_casual": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_casino": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_arcade": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_puzzle": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_strategy": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_role_playing": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_simulation": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_sports": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_entertainment": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_adventure": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_board": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_family": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_word": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_lifestyle": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_trivia": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_shopping": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_finance": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_photo_video": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_travel": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_education": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_social_networking": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_business": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "cat_food_drink": {
+            "defaultValue": 0,
+            "valueType": "number"
+          }
+        }
+      },
+      {
+        "resourceType": "gamecash_user_fea",
+        "namespace": "user",
+        "features": {
+          "user_gender_v2": {
+            "defaultValue": 3,
+            "valueType": "number"
+          },
+          "cardprovided": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_age": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_state": {
+            "defaultValue": "",
+            "valueType": "crc32"
+          },
+          "user_provider__apple": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_provider__facebook": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_provider__google": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_provider__local": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_invitee_joined": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_creator": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "votes_count": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_phone_verified": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_email_verified": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_is_ios": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "days_to_1000_views": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_active_days": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_earning_amt": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_followings_cnt": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_followers_cnt": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_0": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_1": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_2": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_3": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_4": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_5": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_6": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_7": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_8": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_9": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_10": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_11": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_12": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_13": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_14": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_15": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_16": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_17": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_18": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_19": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_20": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_21": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_22": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_23": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_24": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "preference_cate_1": {
+            "defaultValue": "",
+            "valueType": "crc32"
+          },
+          "preference_cate_2": {
+            "defaultValue": "",
+            "valueType": "crc32"
+          },
+          "preference_cate_3": {
+            "defaultValue": "",
+            "valueType": "crc32"
+          }
+        }
+      }
+    ],
+    "ranking-features-group-v1": [
+      {
+        "resourceType": "gamecash_game_fea",
+        "namespace": "post",
+        "features": {
+          "super_offer_title": {
+            "defaultValue": "",
+            "valueType": "crc32"
+          },
+          "is_ios": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_cpi_game": {
+            "defaultValue": 0,
+            "valueType": "number"
+          }
+        }
+      },
+      {
+        "resourceType": "gamecash_user_fea",
+        "namespace": "user",
+        "features": {
+          "user_active_days": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_gender": {
+            "defaultValue": 3,
+            "valueType": "number"
+          },
+          "user_age": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "user_state": {
+            "defaultValue": "",
+            "valueType": "crc32"
+          },
+          "is_preference_beauty": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_women_fashion": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_kitchen": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_men_fashion": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_gadgets": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_home": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_personal_care": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_kids": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_sports": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_pets": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_household": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_preference_grocery": {
+            "defaultValue": 0,
+            "valueType": "number"
+          },
+          "is_reg_3d": {
+            "defaultValue": 0,
+            "valueType": "number"
+          }
+        }
+      }
+    ]
+  }
+}

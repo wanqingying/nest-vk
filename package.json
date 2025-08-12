@@ -49,6 +49,7 @@
     "@types/benchmark": "^2.1.5",
     "@types/ioredis": "^4.28.10",
     "@types/lodash": "^4.17.16",
+    "autocannon": "^8.0.0",
     "axios": "^1.9.0",
     "benchmark": "^2.1.4",
     "bull": "^4.16.5",
