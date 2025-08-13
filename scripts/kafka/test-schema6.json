@@ -9,10 +9,15 @@
     },
     {
       "name": "timestamp",
-      "type": {
-        "type": "long",
-        "logicalType": "timestamp-millis"
-      }
+      "type": "long"
+    },
+    {
+      "name": "age",
+      "type": [
+        "int",
+        "null"
+      ],
+      "default": 1
     },
     {
       "name": "metadata",
@@ -29,7 +34,10 @@
             },
             {
               "name": "campaign",
-              "type": ["null", "string"],
+              "type": [
+                "null",
+                "string"
+              ],
               "default": null
             }
           ]
