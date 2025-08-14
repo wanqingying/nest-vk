@@ -4,7 +4,7 @@ services:
   # ...existing services...
 
   dev:
-    image: node:20.14.0
+    image: node:22.17.1-slim
     container_name: dev
     volumes:
       - .:/app

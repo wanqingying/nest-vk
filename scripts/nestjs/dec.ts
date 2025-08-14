@@ -64,6 +64,8 @@ function transformMethod(
 
     return originalMethod.apply(this, args);
   };
+
+  return descriptor;
 }
 
 async function getConfig(meta: GetStatConfig) {
