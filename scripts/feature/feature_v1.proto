@@ -1,0 +1,174 @@
+syntax = "proto3";
+
+enum FeatureValueType {
+  FEATURE_VALUE_TYPE_EMPTY = 0;
+  FEATURE_VALUE_TYPE_INT64 = 1;
+  FEATURE_VALUE_TYPE_FLOAT = 2;
+  FEATURE_VALUE_TYPE_STRING = 3;
+  FEATURE_VALUE_TYPE_INT64_LIST = 4;
+  FEATURE_VALUE_TYPE_FLOAT_LIST = 5;
+  FEATURE_VALUE_TYPE_STRING_LIST = 6;
+  FEATURE_VALUE_TYPE_PAIR_INT_LIST = 7;
+  FEATURE_VALUE_TYPE_PAIR_STRING_LIST = 8;
+  FEATURE_VALUE_TYPE_LAZY_CROSS = 9;
+  FEATURE_VALUE_TYPE_CROSS = 10;
+  FEATURE_VALUE_TYPE_INT64_FLOAT_MAP = 11;
+  // flowing are not recommended
+  FEATURE_VALUE_TYPE_INT32 = 12;
+  FEATURE_VALUE_TYPE_DOUBLE = 13;
+  FEATURE_VALUE_TYPE_UINT32 = 14;
+  FEATURE_VALUE_TYPE_INT32_LIST = 15;
+  FEATURE_VALUE_TYPE_INT64_INT32_MAP = 16;
+  FEATURE_VALUE_TYPE_INT64_DOUBLE_MAP = 17;
+  FEATURE_VALUE_TYPE_INT32_LIST_LIST = 18;
+  FEATURE_VALUE_TYPE_NULL = 19;
+  FEATURE_VALUE_TYPE_STRING_INT32_MAP = 20;
+  FEATURE_VALUE_TYPE_STRING_DOUBLE_MAP = 21;
+  FEATURE_VALUE_TYPE_STRING_FLOAT_MAP = 22;
+  FEATURE_VALUE_TYPE_INT32_INT32_MAP = 23;
+  FEATURE_VALUE_TYPE_INT32_DOUBLE_MAP = 24;
+  FEATURE_VALUE_TYPE_INT32_FLOAT_MAP = 25;
+  FEATURE_VALUE_TYPE_DOUBLE_LIST = 26;
+}
+
+// feature value type  used for some rule based model
+message PairInt {
+  int64 int64_id = 1;
+  float value = 2;
+}
+
+// feature value used for some rule based model
+message PairString {
+  string string_id = 1;
+  float value = 2;
+}
+
+message RepeatedPairInt { repeated PairInt value = 1; }
+
+message RepeatedInt64 { repeated int64 value = 1; }
+
+message RepeatedUInt64 { repeated uint64 value = 1; }
+
+message RepeatedFloat { repeated float value = 1; }
+
+message RepeatedDouble { repeated double value = 1; }
+
+message RepeatedString { repeated string value = 1; }
+
+message RepeatedPairString { repeated PairString value = 1; }
+
+message Int64FloatMap { map<int64, float> value = 1; }
+
+message RepeatedInt32 { repeated int32 value = 1; }
+
+message Int64Int32Map { map<int64, int32> value = 1; }
+
+message Int64DoubleMap { map<int64, double> value = 1; }
+
+message RepeatedInt32List { repeated RepeatedInt32 value = 1; }
+
+message StringInt32Map { map<string, int32> value = 1; }
+
+message StringDoubleMap { map<string, double> value = 1; }
+
+message StringFloatMap { map<string, float> value = 1; }
+
+message Int32Int32Map { map<int32, int32> value = 1; }
+
+message Int32DoubleMap { map<int32, double> value = 1; }
+
+message Int32FloatMap { map<int32, float> value = 1; }
+
+message ZippedInt64FloatMap {
+  repeated int64 key = 1;
+  repeated float value = 2;
+}
+
+message ZippedInt64Int32Map {
+  repeated int64 key = 1;
+  repeated int32 value = 2;
+}
+
+message ZippedInt64DoubleMap {
+  repeated int64 key = 1;
+  repeated double value = 2;
+}
+
+message ZippedStringFloatMap {
+  repeated string key = 1;
+  repeated float value = 2;
+}
+
+message ZippedStringInt32Map {
+  repeated string key = 1;
+  repeated int32 value = 2;
+}
+
+message ZippedStringDoubleMap {
+  repeated string key = 1;
+  repeated double value = 2;
+}
+
+message ItemInfo {
+  string item_id = 1;
+  string post_id = 2;
+  string creator_id = 3;
+  string product_id = 4;
+}
+
+message FeatureValue {
+  uint32 feature_id = 1;
+  string feature_name = 2;
+  FeatureValueType value_type = 4;
+  oneof feature_value {
+    int64 int64_value = 6;
+    float float_value = 7;
+    string string_value = 8;
+    RepeatedInt64 int64_list_value = 9;
+    RepeatedFloat float_list_value = 10;
+    RepeatedString string_list_value = 11;
+    RepeatedPairInt pair_int_list_value = 12;
+    RepeatedPairString pair_string_list_value = 13;
+    RepeatedInt64 cross_value = 15;
+    Int64FloatMap int64_float_map = 16;
+    int32 int32_value = 17;
+    double double_value = 18;
+    uint32 uint32_value = 19;
+    RepeatedInt32 int32_list_value = 20;
+    Int64Int32Map int64_int32_map = 21;
+    Int64DoubleMap int64_double_map = 22;
+    RepeatedInt32List int32_list_list_value = 23;
+    StringInt32Map string_int32_map = 24;
+    StringDoubleMap string_double_map = 25;
+    StringFloatMap string_float_map = 26;
+    Int32Int32Map int32_int32_map = 27;
+    Int32DoubleMap int32_double_map = 28;
+    Int32FloatMap int32_float_map = 29;
+    RepeatedDouble double_list_value = 30;
+
+    // flowing are only for redis storage and offline process pipeline
+    ZippedInt64FloatMap zipped_int64_float_map_value = 101;
+    ZippedInt64Int32Map zipped_int64_int32_map_value = 102;
+    ZippedInt64DoubleMap zipped_int64_double_map_value = 103;
+    ZippedStringFloatMap zipped_string_float_map_value = 104;
+    ZippedStringInt32Map zipped_string_int32_map_value = 105;
+    ZippedStringDoubleMap zipped_string_double_map_value = 106;
+  }
+}
+
+message FeatureInstance {
+  ItemInfo item_info = 1;
+  repeated FeatureValue feature = 2;
+}
+
+message BatchFeatureDump {
+  repeated FeatureValue common_feature = 1;
+  repeated FeatureInstance feature_instance = 2;
+  string event_metadata = 3;
+  string user_id = 4;
+}
+
+message InferRequest {
+  repeated FeatureValue common_feature = 1;
+  repeated FeatureInstance feature_instance = 2;
+}
