@@ -1,0 +1,7 @@
+{
+  "age": 30,
+  "city": "上海",
+  "contact": { "email": "lisi@example.com" },
+  "premium": true,
+  "interests": ["摄影", "读书"]
+}
